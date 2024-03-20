@@ -1,5 +1,5 @@
-from lexer.tokenizer import Tokenizer
-from lexer.token_type import TokenType
+from .tokenizer import Tokenizer
+from .token_type import TokenType
 
 def test_empty_input():
     tokenizer = Tokenizer("")
@@ -116,6 +116,7 @@ def test_library_functions():
     assert tokens[13].token_type == TokenType.LPAREN
 
 def test_complex_program():
+    # a representive BASIC program for testing
     program = '''
     10 PRINT "Hello, world!"
     20 LET X = 10
@@ -127,7 +128,12 @@ def test_complex_program():
     80 PRINT "Hello, " + NAME$
     90 END
     '''
+
+    # tokenize
     tokenizer = Tokenizer(program)
+
+    # tokenize
     tokens = tokenizer.tokenize()
+
+    # test
     assert len(tokens) == 49
-    # Add more assertions for specific tokens in the complex program

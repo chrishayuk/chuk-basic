@@ -1,6 +1,6 @@
 import re
-from lexer.token import Token
-from lexer.token_type import TokenType
+from .token import Token
+from .token_type import TokenType
 
 class TokenizationError(Exception):
     pass
@@ -34,55 +34,74 @@ class Tokenizer:
         return tokens
 
     def get_next_token(self):
-        self.skip_whitespace()  # Skip leading whitespace
+        # skip any whitespace
+        self.skip_whitespace()
 
+        # only looks at start of a line for line numbers
         if self.current_pos == 0 or self.input_string[self.current_pos - 1] == '\n':
+            # regex match for a line number
             lineno_match = re.match(r'\d+', self.input_string[self.current_pos:])
-            if lineno_match:
-                self.current_pos += len(lineno_match.group(0))
-                self.skip_whitespace()  # Skip whitespace after line number
-                return Token(TokenType.LINENO, int(lineno_match.group(0)))
 
+            # we got a line number
+            if lineno_match:
+                # get the current position
+                self.current_pos += len(lineno_match.group(0))
+
+                # skip whitespace after line number
+                self.skip_whitespace()
+
+                # return the token
+                return Token(TokenType.LINENO, int(lineno_match.group(0)))
+            
+        # string literal
         string_match = re.match(r'"([^"]*)"', self.input_string[self.current_pos:])
         if string_match:
             self.current_pos += len(string_match.group(0))
             return Token(TokenType.STRING, string_match.group(1))
-
+        
+        # comments
         rem_match = re.match(r'REM\s*(.*)', self.input_string[self.current_pos:], re.IGNORECASE)
         if rem_match:
             self.current_pos += len(rem_match.group(0))
             return Token(TokenType.REM, rem_match.group(1))
-
+        
+        # data keyword
         data_match = re.match(r'DATA\s*(.*)', self.input_string[self.current_pos:], re.IGNORECASE)
         if data_match:
             self.current_pos += len(data_match.group(0))
             return Token(TokenType.DATA, data_match.group(1))
-
+        
+        # keyword
         for keyword, token_type in TokenType.get_keyword_token_map().items():
             if self.input_string[self.current_pos:].lower().startswith(keyword.lower()):
                 self.current_pos += len(keyword)
                 return Token(token_type, keyword)
-            
+
+        # library function    
         for library, token_type in TokenType.get_library_token_map().items():
             if self.input_string[self.current_pos:].lower().startswith(library.lower()):
                 self.current_pos += len(library)
                 return Token(token_type, library)
-        
+            
+        # operator
         for operator, token_type in TokenType.get_operator_token_map().items():
             if self.input_string[self.current_pos:].startswith(operator):
                 self.current_pos += len(operator)
                 return Token(token_type, operator)
-        
+
+        # punctuation 
         for punctuation, token_type in TokenType.get_punctuation_token_map().items():
             if self.input_string[self.current_pos:].startswith(punctuation):
                 self.current_pos += len(punctuation)
                 return Token(token_type, punctuation)
-
+            
+        # number
         number_match = re.match(r'\d+', self.input_string[self.current_pos:])
         if number_match:
             self.current_pos += len(number_match.group(0))
             return Token(TokenType.NUMBER, int(number_match.group(0)))
-
+        
+        # character
         char_match = re.match(r'[A-Za-z]', self.input_string[self.current_pos:])
         if char_match:
             self.current_pos += 1
