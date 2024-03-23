@@ -37,22 +37,26 @@ class Tokenizer:
         # skip any whitespace
         self.skip_whitespace()
 
-        # only looks at start of a line for line numbers
-        if self.current_pos == 0 or self.input_string[self.current_pos - 1] == '\n':
-            # regex match for a line number
+        # check if we're at the end of the input string
+        if self.current_pos >= len(self.input_string):
+            return None
+
+        # check if the current position is at the beginning of a line
+        is_beginning_of_line = (self.current_pos == 0) or (self.input_string[self.current_pos - 1] == '\n')
+
+        if is_beginning_of_line:
+            # regex match for a line number
             lineno_match = re.match(r'\d+', self.input_string[self.current_pos:])
 
-            # we got a line number
             if lineno_match:
-                # get the current position
-                self.current_pos += len(lineno_match.group(0))
+                lineno = lineno_match.group(0)
+                next_pos = self.current_pos + len(lineno)
+                
+                # check if the line number is followed by a space or end of input
+                if next_pos == len(self.input_string) or self.input_string[next_pos].isspace():
+                    self.current_pos = next_pos
+                    return Token(TokenType.LINENO, int(lineno))
 
-                # skip whitespace after line number
-                self.skip_whitespace()
-
-                # return the token
-                return Token(TokenType.LINENO, int(lineno_match.group(0)))
-            
         # string literal
         string_match = re.match(r'"([^"]*)"', self.input_string[self.current_pos:])
         if string_match:
@@ -101,11 +105,12 @@ class Tokenizer:
             self.current_pos += len(number_match.group(0))
             return Token(TokenType.NUMBER, int(number_match.group(0)))
         
-        # character
-        char_match = re.match(r'[A-Za-z]', self.input_string[self.current_pos:])
-        if char_match:
-            self.current_pos += 1
-            return Token(TokenType.CHAR, char_match.group(0))
+        # identifier
+        identifier_match = re.match(r'[A-Za-z][A-Za-z0-9]*\$?', self.input_string[self.current_pos:])
+        if identifier_match:
+            identifier = identifier_match.group(0)
+            self.current_pos += len(identifier)
+            return Token(TokenType.IDENTIFIER, identifier)
 
         return None
 

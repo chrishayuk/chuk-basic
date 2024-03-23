@@ -1,19 +1,23 @@
-# test_expression_parser.py
 from ast import *
 from compiler.lexer.token_type import TokenType
 from compiler.lexer.tokenizer import Tokenizer
+from compiler.lexer.token import Token
 from .ast import BinaryExpression, Literal, UnaryExpression, Variable
 from .expression_parser import parse_expression
 from .parser import Parser
 
 def test_parse_literal_expression():
-    input_string = "42"
-    tokenizer = Tokenizer(input_string)
-    tokens = tokenizer.tokenize()
+    # empty tokens
+    tokens = []
+    tokens.append(Token(TokenType.NUMBER, 42))
+
+    # parse expression
     parser = Parser(tokens)
     expression = parse_expression(parser)
-    assert isinstance(expression, Literal)
-    assert expression.value == 42
+    print("Expression:", expression)
+
+    assert isinstance(expression, Literal), f"Expected Literal, but got {type(expression).__name__}"
+    assert expression.value == 42, f"Expected value 42, but got {expression.value}"
 
 def test_parse_variable_expression():
     input_string = "x"

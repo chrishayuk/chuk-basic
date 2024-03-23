@@ -74,29 +74,48 @@ def test_punctuation():
     assert tokens[6].token_type == TokenType.PERCENT
 
 def test_numbers():
-    tokenizer = Tokenizer("123 456")
-    tokens = tokenizer.tokenize()
-    assert len(tokens) == 2
-    assert tokens[0].token_type == TokenType.LINENO
-    assert tokens[0].value == 123
-    assert tokens[1].token_type == TokenType.NUMBER
-    assert tokens[1].value == 456
-
-def test_chars():
-    tokenizer = Tokenizer("A B C")
+    # Test regular numbers
+    tokenizer = Tokenizer("PRINT 123 456")
     tokens = tokenizer.tokenize()
     assert len(tokens) == 3
-    assert tokens[0].token_type == TokenType.CHAR
-    assert tokens[0].value == "A"
-    assert tokens[1].token_type == TokenType.CHAR
-    assert tokens[1].value == "B"
-    assert tokens[2].token_type == TokenType.CHAR
-    assert tokens[2].value == "C"
+    assert tokens[0].token_type == TokenType.PRINT
+    assert tokens[1].token_type == TokenType.NUMBER
+    assert tokens[1].value == 123
+    assert tokens[2].token_type == TokenType.NUMBER
+    assert tokens[2].value == 456
+
+    # Test line numbers
+    tokenizer = Tokenizer("10 PRINT 123\n20 PRINT 456")
+    tokens = tokenizer.tokenize()
+    assert len(tokens) == 6
+    assert tokens[0].token_type == TokenType.LINENO
+    assert tokens[0].value == 10
+    assert tokens[1].token_type == TokenType.PRINT
+    assert tokens[2].token_type == TokenType.NUMBER
+    assert tokens[2].value == 123
+    assert tokens[3].token_type == TokenType.LINENO
+    assert tokens[3].value == 20
+    assert tokens[4].token_type == TokenType.PRINT
+    assert tokens[5].token_type == TokenType.NUMBER
+    assert tokens[5].value == 456
+
+def test_identifiers():
+    tokenizer = Tokenizer("variable1 variable2 x y")
+    tokens = tokenizer.tokenize()
+    assert len(tokens) == 4
+    assert tokens[0].token_type == TokenType.IDENTIFIER
+    assert tokens[0].value == "variable1"
+    assert tokens[1].token_type == TokenType.IDENTIFIER
+    assert tokens[1].value == "variable2"
+    assert tokens[2].token_type == TokenType.IDENTIFIER
+    assert tokens[2].value == "x"
+    assert tokens[3].token_type == TokenType.IDENTIFIER
+    assert tokens[3].value == "y"
 
 def test_library_functions():
     tokenizer = Tokenizer("SIN(0) COS(0) RND(1) LEFT$(A$, 3)")
     tokens = tokenizer.tokenize()
-    assert len(tokens) == 19
+    assert len(tokens) == 18
     assert tokens[0].token_type == TokenType.SIN
     assert tokens[1].token_type == TokenType.LPAREN
     assert tokens[2].token_type == TokenType.NUMBER
@@ -114,6 +133,12 @@ def test_library_functions():
     assert tokens[11].token_type == TokenType.RPAREN
     assert tokens[12].token_type == TokenType.LEFT_DOLLAR
     assert tokens[13].token_type == TokenType.LPAREN
+    assert tokens[14].token_type == TokenType.IDENTIFIER
+    assert tokens[14].value == "A$"
+    assert tokens[15].token_type == TokenType.COMMA
+    assert tokens[16].token_type == TokenType.NUMBER
+    assert tokens[16].value == 3
+    assert tokens[17].token_type == TokenType.RPAREN
 
 def test_complex_program():
     # a representive BASIC program for testing
@@ -136,4 +161,4 @@ def test_complex_program():
     tokens = tokenizer.tokenize()
 
     # test
-    assert len(tokens) == 49
+    assert len(tokens) == 41

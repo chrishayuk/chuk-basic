@@ -6,6 +6,7 @@ class TokenType(Enum):
     NUMBER = 'NUMBER'
     CHAR = 'CHAR'
     LINENO = 'LINENO'
+    IDENTIFIER = 'IDENTIFIER'
 
     # punctuation
     COMMA = ','
@@ -42,6 +43,7 @@ class TokenType(Enum):
     TO = 'TO'
     IF = 'IF'
     THEN = 'THEN'
+    ELSE = 'ELSE'
     FOR = 'FOR'
     NEXT = 'NEXT'
     END = 'END'

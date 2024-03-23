@@ -19,6 +19,41 @@ class LetStatement(Statement):
         self.variable = variable
         self.expression = expression
 
+class RemStatement(Statement):
+    def __init__(self, comment):
+        self.comment = comment
+
+class StopStatement(Statement):
+    pass
+
+class IfStatement(Statement):
+    def __init__(self, condition, then_statement, else_statement):
+        self.condition = condition
+        self.then_statement = then_statement
+        self.else_statement = else_statement
+
+class ForStatement(Statement):
+    def __init__(self, variable, start_expression, end_expression, step_expression):
+        self.variable = variable
+        self.start_expression = start_expression
+        self.end_expression = end_expression
+        self.step_expression = step_expression
+
+class GotoStatement(Statement):
+    def __init__(self, line_number):
+        self.line_number = line_number
+
+class GosubStatement(Statement):
+    def __init__(self, line_number):
+        self.line_number = line_number
+
+class ReturnStatement(Statement):
+    pass
+
+class InputStatement(Statement):
+    def __init__(self, variable):
+        self.variable = variable
+
 class Expression(ASTNode):
     pass
 
