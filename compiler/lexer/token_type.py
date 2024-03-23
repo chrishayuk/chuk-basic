@@ -4,7 +4,6 @@ class TokenType(Enum):
     # identifiers
     STRING = 'STRING'
     NUMBER = 'NUMBER'
-    CHAR = 'CHAR'
     LINENO = 'LINENO'
     IDENTIFIER = 'IDENTIFIER'
 

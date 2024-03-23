@@ -63,10 +63,6 @@ def parse_primary_expression(parser):
         elif token.token_type == TokenType.IDENTIFIER:
             parser.current_pos += 1
             return Variable(token.value)
-        # chars are variables
-        elif token.token_type == TokenType.CHAR:
-            parser.current_pos += 1
-            return Variable(token.value)
         # parenthesis
         elif token.token_type == TokenType.LPAREN:
             parser.current_pos += 1

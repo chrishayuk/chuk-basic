@@ -1,6 +1,4 @@
-from compiler.lexer.token_type import TokenType
 from compiler.lexer.tokenizer import Tokenizer
-from compiler.lexer.token import Token
 from compiler.parser.ast import BinaryExpression, IfStatement, ForStatement, GotoStatement, GosubStatement, ReturnStatement, InputStatement, LetStatement, RemStatement, StopStatement, PrintStatement
 from compiler.parser.statement_parser import parse_statement
 from compiler.parser.parser import Parser
