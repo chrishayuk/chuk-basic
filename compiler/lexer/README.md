@@ -8,9 +8,9 @@ The current implementation of the tokenizer is fully compliant with Dartmouth BA
 The current tokenizer supports the following constructs
 
 - String Literals
-- Punctuation
 - Numbers
-- Characters
+- Identifiers
+- Punctuation
 - Operators
 - Comments
 - Line Numbers
