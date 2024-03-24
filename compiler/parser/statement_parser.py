@@ -46,15 +46,15 @@ def parse_if_statement(parser):
     # parse the THEN statement
     then_statement = parse_statement(parser)
 
-    # parse the ELSE statement
-    if parser.current_token.token_type == TokenType.ELSE:
-        # skip the else keyword
+    # check if there is an ELSE clause
+    if parser.current_pos < len(parser.tokens) and parser.tokens[parser.current_pos].token_type == TokenType.ELSE:
+        # skip the ELSE keyword
         parser.advance()
 
-        # parse the else statement
+        # parse the ELSE statement
         else_statement = parse_statement(parser)
     else:
-        # no else
+        # no ELSE clause
         else_statement = None
 
     # if statement
