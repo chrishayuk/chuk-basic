@@ -1,6 +1,6 @@
-from .ast import IfStatement, ForStatement, GotoStatement, GosubStatement, LetStatement, PrintStatement, RemStatement, ReturnStatement, InputStatement, StopStatement
+from .ast import DefStatement, IfStatement, ForStatement, NextStatement, GotoStatement, GosubStatement, LetStatement, PrintStatement, RemStatement, ReturnStatement, InputStatement, StopStatement, EndStatement, Variable
 from ..lexer.token_type import TokenType
-from .expression_parser import parse_expression
+from .expression_parser import parse_expression, parse_fn_statement
 
 def parse_statement(parser):
     # get the current token type
@@ -30,6 +30,12 @@ def parse_statement(parser):
         return parse_stop_statement(parser)
     elif token_type == TokenType.PRINT:
         return parse_print_statement(parser)
+    elif token_type == TokenType.DEF:
+        return parse_def_statement(parser)
+    elif token_type == TokenType.FN:
+        return parse_fn_statement(parser)
+    elif token_type == TokenType.END:
+        return parse_end_statement(parser)
     else:
         return None
 
@@ -61,7 +67,7 @@ def parse_if_statement(parser):
     return IfStatement(condition, then_statement, else_statement)
 
 def parse_for_statement(parser):
-     # set the position
+    # set the position
     parser.advance()
 
     # parse the for variable
@@ -86,8 +92,35 @@ def parse_for_statement(parser):
         # no step expression
         step_expression = None
 
+    # parse the loop body
+    loop_body = parse_statement(parser)
+
+    # expect the NEXT keyword
+    if parser.current_token.token_type != TokenType.NEXT:
+        raise SyntaxError("Expected 'NEXT' keyword after FOR loop body")
+    parser.advance()
+
+    # expect the loop variable
+    if parser.current_token.token_type != TokenType.IDENTIFIER or parser.current_token.value != variable.name:
+        raise SyntaxError("Expected loop variable after 'NEXT' keyword")
+    next_variable = Variable(parser.current_token.value)
+    parser.advance()
+
+    # create the NextStatement
+    next_statement = NextStatement(next_variable)
+
     # return the for statement
-    return ForStatement(variable, start_expression, end_expression, step_expression)
+    return ForStatement(variable, start_expression, end_expression, step_expression, loop_body, next_statement)
+
+def parse_next_statement(parser):
+    # set the position
+    parser.advance()
+
+    # parse the variable
+    variable = parser.parse_variable()
+
+    # return the statement
+    return NextStatement(variable)
 
 def parse_goto_statement(parser):
     # set the position
@@ -188,3 +221,48 @@ def parse_print_statement(parser):
 
     # return the statement
     return PrintStatement(expression)
+
+def parse_end_statement(parser):
+    # set the position
+    parser.advance()
+
+    # return the statement
+    return EndStatement()
+
+def parse_def_statement(parser):
+    # set the position
+    parser.advance()
+
+    # parse the function name
+    function_name = parser.parse_variable()
+
+    # expect the opening parenthesis
+    if parser.current_token.token_type != TokenType.LPAREN:
+        raise SyntaxError("Expected '(' after function name in DEF statement")
+    parser.advance()
+
+    # parse the parameter list
+    parameters = []
+    while parser.current_token.token_type != TokenType.RPAREN:
+        parameter = parser.parse_variable()
+        parameters.append(parameter)
+        if parser.current_token.token_type == TokenType.COMMA:
+            parser.advance()
+        else:
+            break
+
+    # expect the closing parenthesis
+    if parser.current_token.token_type != TokenType.RPAREN:
+        raise SyntaxError("Expected ')' after parameter list in DEF statement")
+    parser.advance()
+
+    # expect the '=' sign
+    if parser.current_token.token_type != TokenType.EQ:
+        raise SyntaxError("Expected '=' after parameter list in DEF statement")
+    parser.advance()
+
+    # parse the function body
+    function_body = parse_expression(parser)
+
+    # return the statement
+    return DefStatement(function_name, parameters, function_body)

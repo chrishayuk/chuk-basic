@@ -1,6 +1,6 @@
 from ast import *
 from ..lexer.token_type import TokenType
-from .ast import BinaryExpression, Literal, UnaryExpression, Variable
+from .ast import BinaryExpression, FnExpression, Literal, UnaryExpression, Variable
 
 def parse_expression(parser):
     return parse_binary_expression(parser, 0)
@@ -77,6 +77,8 @@ def parse_primary_expression(parser):
             # Skip line number tokens in expressions
             parser.current_pos += 1
             return parse_primary_expression(parser)
+        elif token.token_type == TokenType.FN:
+            return parse_fn_statement(parser)
 
     return None
 
@@ -96,3 +98,26 @@ def get_operator_precedence(token_type):
         return 6
     else:
         return 0
+    
+def parse_fn_statement(parser):
+    # set the position
+    parser.advance()
+
+    # parse the function name
+    function_name = parser.parse_variable()
+
+    # expect the opening parenthesis
+    if parser.current_token.token_type != TokenType.LPAREN:
+        raise SyntaxError("Expected '(' after function name in FN statement")
+    parser.advance()
+
+    # parse the argument
+    argument = parse_expression(parser)
+
+    # expect the closing parenthesis
+    if parser.current_token.token_type != TokenType.RPAREN:
+        raise SyntaxError("Expected ')' after argument in FN statement")
+    parser.advance()
+
+    # return the function call expression
+    return FnExpression(function_name, argument)

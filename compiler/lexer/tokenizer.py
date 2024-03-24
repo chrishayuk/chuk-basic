@@ -32,7 +32,7 @@ class Tokenizer:
                     # unexpected character
                     raise TokenizationError(f"Unexpected character: {self.input_string[self.current_pos]}")
         return tokens
-
+    
     def get_next_token(self):
         # skip any whitespace
         self.skip_whitespace()
@@ -52,8 +52,8 @@ class Tokenizer:
                 lineno = lineno_match.group(0)
                 next_pos = self.current_pos + len(lineno)
                 
-                # check if the line number is followed by a space or end of input
-                if next_pos == len(self.input_string) or self.input_string[next_pos].isspace():
+                # check if the line number is followed by a space, line break, or end of input
+                if next_pos == len(self.input_string) or self.input_string[next_pos] in (' ', '\n'):
                     self.current_pos = next_pos
                     return Token(TokenType.LINENO, int(lineno))
 
@@ -106,7 +106,7 @@ class Tokenizer:
             return Token(TokenType.NUMBER, int(number_match.group(0)))
         
         # identifier
-        identifier_match = re.match(r'[A-Za-z][A-Za-z0-9]*\$?', self.input_string[self.current_pos:])
+        identifier_match = re.match(r'(?:FN[A-Za-z][A-Za-z0-9]*|[A-Za-z][A-Za-z0-9]*)\$?', self.input_string[self.current_pos:])
         if identifier_match:
             identifier = identifier_match.group(0)
             self.current_pos += len(identifier)
@@ -116,6 +116,6 @@ class Tokenizer:
 
     def skip_whitespace(self):
         # loops from current position until either we hit the end of the string, or until we hit a space
-        while self.current_pos < len(self.input_string) and self.input_string[self.current_pos].isspace():
+        while self.current_pos < len(self.input_string) and (self.input_string[self.current_pos].isspace() or self.input_string[self.current_pos] == '\n'):
             # move the position along
             self.current_pos += 1

@@ -33,12 +33,17 @@ class IfStatement(Statement):
         self.else_statement = else_statement
 
 class ForStatement(Statement):
-    def __init__(self, variable, start_expression, end_expression, step_expression):
+    def __init__(self, variable, start_expression, end_expression, step_expression, loop_body):
         self.variable = variable
         self.start_expression = start_expression
         self.end_expression = end_expression
         self.step_expression = step_expression
+        self.loop_body = loop_body
 
+class NextStatement(Statement):
+    def __init__(self, variable):
+        self.variable = variable
+        
 class GotoStatement(Statement):
     def __init__(self, line_number):
         self.line_number = line_number
@@ -53,6 +58,21 @@ class ReturnStatement(Statement):
 class InputStatement(Statement):
     def __init__(self, variable):
         self.variable = variable
+
+class EndStatement(Statement):
+    pass
+
+class OnStatement(Statement):
+    def __init__(self, expression, line_numbers, is_gosub):
+        self.expression = expression
+        self.line_numbers = line_numbers
+        self.is_gosub = is_gosub
+
+class DefStatement(Statement):
+    def __init__(self, function_name, parameters, function_body):
+        self.function_name = function_name
+        self.parameters = parameters
+        self.function_body = function_body
 
 class Expression(ASTNode):
     pass
@@ -75,3 +95,8 @@ class Literal(Expression):
 class Variable(Expression):
     def __init__(self, name):
         self.name = name
+
+class FnExpression(Expression):
+    def __init__(self, function_name, argument):
+        self.function_name = function_name
+        self.argument = argument

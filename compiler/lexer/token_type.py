@@ -6,6 +6,7 @@ class TokenType(Enum):
     NUMBER = 'NUMBER'
     LINENO = 'LINENO'
     IDENTIFIER = 'IDENTIFIER'
+    NEWLINE = 'NEWLINE'
 
     # punctuation
     COMMA = ','
