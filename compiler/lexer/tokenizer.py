@@ -105,8 +105,13 @@ class Tokenizer:
             self.current_pos += len(number_match.group(0))
             return Token(TokenType.NUMBER, int(number_match.group(0)))
         
+        # Check for FN keyword before identifier
+        if self.input_string[self.current_pos:].startswith("FN"):
+            self.current_pos += 2
+            return Token(TokenType.FN, "FN")
+
         # identifier
-        identifier_match = re.match(r'(?:FN[A-Za-z][A-Za-z0-9]*|[A-Za-z][A-Za-z0-9]*)\$?', self.input_string[self.current_pos:])
+        identifier_match = re.match(r'(FN[A-Za-z][A-Za-z0-9]*|[A-Za-z][A-Za-z0-9]*)\$?', self.input_string[self.current_pos:])
         if identifier_match:
             identifier = identifier_match.group(0)
             self.current_pos += len(identifier)

@@ -147,7 +147,7 @@ def test_def_keyword():
     assert tokens[0].token_type == TokenType.DEF
     assert tokens[1].token_type == TokenType.FN
     assert tokens[2].token_type == TokenType.IDENTIFIER
-    assert tokens[2].value == "FNSquare"
+    assert tokens[2].value == "Square"
     assert tokens[3].token_type == TokenType.LPAREN
     assert tokens[4].token_type == TokenType.IDENTIFIER
     assert tokens[4].value == "X"
@@ -166,7 +166,7 @@ def test_fn_keyword():
     assert tokens[0].token_type == TokenType.PRINT
     assert tokens[1].token_type == TokenType.FN
     assert tokens[2].token_type == TokenType.IDENTIFIER
-    assert tokens[2].value == "FNSquare"
+    assert tokens[2].value == "Square"    
     assert tokens[3].token_type == TokenType.LPAREN
     assert tokens[4].token_type == TokenType.NUMBER
     assert tokens[4].value == 5
@@ -181,11 +181,13 @@ def test_next_keyword():
     assert tokens[1].token_type == TokenType.FOR
     assert tokens[2].token_type == TokenType.IDENTIFIER
     assert tokens[2].value == "I"
-    assert tokens[15].token_type == TokenType.LINENO
-    assert tokens[15].value == 30
-    assert tokens[16].token_type == TokenType.NEXT
-    assert tokens[17].token_type == TokenType.IDENTIFIER
-    assert tokens[17].value == "I"
+    assert tokens[7].token_type == TokenType.LINENO
+    assert tokens[7].value == 20
+    assert tokens[10].token_type == TokenType.LINENO
+    assert tokens[10].value == 30
+    assert tokens[11].token_type == TokenType.NEXT
+    assert tokens[12].token_type == TokenType.IDENTIFIER
+    assert tokens[12].value == "I"
 
 def test_end_keyword():
     tokenizer = Tokenizer("10 PRINT \"Hello\"\n20 END")
