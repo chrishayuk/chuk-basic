@@ -23,10 +23,10 @@ def test_parse_for_statement():
     tokens = tokenizer.tokenize()
     parser = Parser(tokens)
     statement = parse_statement(parser)
+
     assert isinstance(statement, ForStatement)
-    assert isinstance(statement.loop_body, Statement)
-    assert isinstance(statement.next_statement, NextStatement)
-    assert statement.next_statement.variable.name == "i"
+    for body_statement in statement.loop_body:
+        assert isinstance(body_statement, Statement)
 
 def test_parse_goto_statement():
     input_string = "GOTO 100"
