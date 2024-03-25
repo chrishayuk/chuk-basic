@@ -1,19 +1,23 @@
+from typing import Optional
+from contextlib import suppress
 from .ast.ast_node import Variable
-from .ast.ast_expression import BinaryExpression, FnExpression, Literal, UnaryExpression
+from .ast.ast_expression import Expression, BinaryExpression, FnExpression, Literal, UnaryExpression
 from ..lexer.token_type import TokenType
 
-def parse_expression(parser):
+def parse_expression(parser) -> Optional[Expression]:
+    """Parse and return the top-level expression in the token stream."""
     # parse a binary expression by default
     return parse_binary_expression(parser, 0)
 
-def parse_binary_expression(parser, precedence):
+def parse_binary_expression(parser, precedence: int) -> Optional[Expression]:
+    """Parse and return a binary expression with the given precedence."""
     # left is unary
     left = parse_unary_expression(parser)
 
     # get right hand token
     while parser.current_pos < len(parser.tokens):
         # get the token
-        token = parser.tokens[parser.current_pos]
+        token = parser.current_token
 
         # plus, minus, multiply, divide, comparison operators, and inbuilt functions are binary operators
         if token.token_type in [
@@ -23,7 +27,7 @@ def parse_binary_expression(parser, precedence):
         ]:
             operator_precedence = get_operator_precedence(token.token_type)
             if operator_precedence > precedence:
-                parser.current_pos += 1
+                parser.advance()
                 right = parse_binary_expression(parser, operator_precedence)
                 left = BinaryExpression(left, token, right)
             else:
@@ -33,57 +37,56 @@ def parse_binary_expression(parser, precedence):
 
     return left
 
-def parse_unary_expression(parser):
-    # ensure we still have tokens
-    if parser.current_pos < len(parser.tokens):
-        # parse the token
-        token = parser.tokens[parser.current_pos]
+def parse_unary_expression(parser) -> Optional[Expression]:
+    """Parse and return a unary expression."""
+    with suppress(IndexError):
+        # get the token
+        token = parser.current_token
 
         # math stuff, +, -, NOT
         if token.token_type in [TokenType.PLUS, TokenType.MINUS, TokenType.NOT]:
-            parser.current_pos += 1
+            parser.advance()
             operand = parse_unary_expression(parser)
             return UnaryExpression(token, operand)
 
     return parse_primary_expression(parser)
 
-def parse_primary_expression(parser):
-    # ensure we still have tokens
-    if parser.current_pos < len(parser.tokens):
+def parse_primary_expression(parser) -> Optional[Expression]:
+    """Parse and return a primary expression."""
+    with suppress(IndexError):
         # get the current token
         token = parser.tokens[parser.current_pos]
 
         # numbers are literals
         if token.token_type == TokenType.NUMBER:
-            parser.current_pos += 1
+            parser.advance()
             return Literal(token.value)
         # strings are literals
         elif token.token_type == TokenType.STRING:
-            parser.current_pos += 1
+            parser.advance()
             return Literal(token.value)
         elif token.token_type == TokenType.IDENTIFIER:
-            parser.current_pos += 1
+            parser.advance()
             return Variable(token.value)
         # parenthesis
         elif token.token_type == TokenType.LPAREN:
-            parser.current_pos += 1
+            parser.advance()
+            # parse expression handles the right parenthesis
             expression = parse_expression(parser)
-            if parser.current_pos < len(parser.tokens) and parser.tokens[parser.current_pos].token_type == TokenType.RPAREN:
-                parser.current_pos += 1
-                return expression
-            else:
-                raise ValueError("Expected closing parenthesis")
+            parser.advance()
+            return expression
         # line number
         elif token.token_type == TokenType.LINENO:
             # Skip line number tokens in expressions
-            parser.current_pos += 1
+            parser.advance()
             return parse_primary_expression(parser)
         elif token.token_type == TokenType.FN:
             return parse_fn_expression(parser)
 
     return None
 
-def get_operator_precedence(token_type):
+def get_operator_precedence(token_type: TokenType) -> int:
+    """Get the operator precedence for the given token type."""
     # set the operator precedence for each operator
     if token_type in [TokenType.OR]:
         return 1
@@ -100,14 +103,16 @@ def get_operator_precedence(token_type):
     else:
         return 0
     
-def parse_fn_expression(parser):
+def parse_fn_expression(parser) -> Optional[FnExpression]:
+    """Parse and return an FN expression."""
     # expect the FN keyword
     if parser.current_token.token_type != TokenType.FN:
         raise SyntaxError("Expected 'FN' keyword")
     parser.advance()
 
     # parse the function name
-    function_name = parser.parse_variable()
+    function_name = Variable(parser.current_token.value)
+    parser.advance()
 
     # expect the opening parenthesis
     if parser.current_token.token_type != TokenType.LPAREN:
@@ -122,7 +127,6 @@ def parse_fn_expression(parser):
     if parser.current_token.token_type != TokenType.EQ:
         raise SyntaxError("Expected '=' after argument in FN statement")
     parser.advance()
-    print("current token type: ", parser.current_token.token_type)
 
     # parse the function body
     function_body = parse_expression(parser)
