@@ -1,8 +1,9 @@
-from ast import *
+from .ast.ast_node import Variable
+from .ast.ast_expression import BinaryExpression, FnExpression, Literal, UnaryExpression
 from ..lexer.token_type import TokenType
-from .ast import BinaryExpression, FnExpression, Literal, UnaryExpression, Variable
 
 def parse_expression(parser):
+    # parse a binary expression by default
     return parse_binary_expression(parser, 0)
 
 def parse_binary_expression(parser, precedence):

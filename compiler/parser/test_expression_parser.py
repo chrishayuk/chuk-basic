@@ -1,8 +1,9 @@
 from ast import *
-from compiler.lexer.token_type import TokenType
-from compiler.lexer.tokenizer import Tokenizer
-from compiler.lexer.token import Token
-from .ast import BinaryExpression, FnExpression, Literal, UnaryExpression, Variable
+from ..lexer.token_type import TokenType
+from ..lexer.tokenizer import Tokenizer
+from ..lexer.token import Token
+from .ast.ast_node import Variable
+from .ast.ast_expression import BinaryExpression, FnExpression, Literal, UnaryExpression
 from .expression_parser import parse_expression
 from .parser import Parser
 

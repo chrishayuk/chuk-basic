@@ -1,8 +1,7 @@
-from ast import *
+from .ast.ast_node import Program, Variable
 from ..lexer.token_type import TokenType
 from .expression_parser import parse_expression
 from .statement_parser import parse_statement
-from .ast import Program, Variable
 
 class Parser:
     def __init__(self, tokens):
@@ -10,7 +9,6 @@ class Parser:
         self.current_pos = 0
         self.current_token = self.tokens[self.current_pos] if self.tokens else None
 
-    
     def advance(self):
         self.current_pos += 1
         if self.current_pos < len(self.tokens):
@@ -28,6 +26,9 @@ class Parser:
             self.advance()
         return Program(statements)
 
+    def parse_expression(self):
+        return parse_expression(self)
+    
     def parse_variable(self):
         token = self.current_token
         if token.token_type == TokenType.IDENTIFIER:
@@ -35,6 +36,3 @@ class Parser:
             return Variable(token.value)
         else:
             raise SyntaxError(f"Expected variable, but got {token.token_type}")
-
-    def parse_expression(self):
-        return parse_expression(self)
