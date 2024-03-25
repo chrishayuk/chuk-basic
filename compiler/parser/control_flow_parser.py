@@ -1,8 +1,10 @@
+
 from contextlib import suppress
 from typing import List, Optional
 from ..lexer.token_type import TokenType
-from ..ast.ast_statement import Statement
 from ..ast.ast_node import Variable
+from ..ast.ast_expression import Expression
+from ..ast.ast_statement import Statement
 from ..ast.ast_control_flow import IfStatement, ForStatement, NextStatement, GotoStatement, GosubStatement
 from .expression_parser import parse_expression
 from ..parser.basic_statement_parser import parse_basic_statement
@@ -23,8 +25,6 @@ def parse_control_flow_statement(parser):
             return parse_gosub_statement(parser)
         else:
             raise SyntaxError("Expected 'TO' or 'SUB' keyword after 'GO'")
-    elif token_type == TokenType.NEXT:
-        return parse_next_statement(parser)
     else:
         return None
     
@@ -64,6 +64,7 @@ def parse_if_statement(parser) -> Optional[IfStatement]:
     return IfStatement(condition, then_statement, else_statement)
 
 def parse_for_statement(parser):
+    """ Parse a FOR statement from the token stream. """
     # set the position
     parser.advance()
 
@@ -92,7 +93,26 @@ def parse_for_statement(parser):
     # parse the TO expression
     end_expression = parse_expression(parser)
 
-    # check for STEP keyword
+    # parse the step expression
+    step_expression = parse_step_expression(parser)
+
+    # parse the loop body
+    loop_body = parse_loop_body(parser)
+
+    # expect the NEXT keyword
+    expect_next_keyword(parser)
+
+    # expect the loop variable
+    next_variable = expect_loop_variable(parser, variable.name)
+
+    # create the NextStatement
+    next_statement = NextStatement(next_variable)
+
+    # return the for statement
+    return ForStatement(variable, start_expression, end_expression, step_expression, loop_body, next_statement)
+
+def parse_step_expression(parser) -> Optional[Expression]:
+    """ Parse the step expression for a FOR statement """
     step_expression = None
     if parser.current_token.token_type == TokenType.STEP:
         # skip the step keyword
@@ -101,14 +121,20 @@ def parse_for_statement(parser):
         # parse the step expression
         step_expression = parse_expression(parser)
 
-    # parse the loop body
+    return step_expression
+
+def parse_loop_body(parser) -> List[Statement]:
+    """ Parse the loop body for a FOR statement. """
     loop_body: List[Statement] = []
     while parser.current_token.token_type != TokenType.NEXT:
         statement = parse_basic_statement(parser)
         if statement is not None:
             loop_body.append(statement)
 
-    # expect the NEXT keyword
+    return loop_body
+
+def expect_next_keyword(parser):
+    """ Check if the current token is the NEXT keyword and raise a SyntaxError if it's not. """
     with suppress(StopIteration):
         if parser.current_token.token_type != TokenType.NEXT:
             raise SyntaxError(
@@ -116,49 +142,40 @@ def parse_for_statement(parser):
             )
     parser.advance()
 
-    # expect the loop variable
+def expect_loop_variable(parser, expected_variable_name: str) -> Variable:
+    """ Check if the current token is the expected loop variable and raise a SyntaxError if it's not. """
+    # ensure we have an identifier
     with suppress(StopIteration):
-        if parser.current_token.token_type != TokenType.IDENTIFIER or parser.current_token.value != variable.name:
+        if parser.current_token.token_type != TokenType.IDENTIFIER or parser.current_token.value != expected_variable_name:
             raise SyntaxError(
-                f"Expected loop variable '{variable.name}' after 'NEXT' keyword, but got '{parser.current_token.value}' ({parser.current_token.token_type})"
+                f"Expected loop variable '{expected_variable_name}' after 'NEXT' keyword, but got '{parser.current_token.value}' ({parser.current_token.token_type})"
             )
+    
+    # parse and return return the next variable
     next_variable = Variable(parser.current_token.value)
     parser.advance()
+    return next_variable
 
-    # create the NextStatement
-    next_statement = NextStatement(next_variable)
-
-    # return the for statement
-    return ForStatement(variable, start_expression, end_expression, step_expression, loop_body, next_statement)
-
-def parse_next_statement(parser):
-    # set the position
-    parser.advance()
-
-    # parse the variable
-    variable = parser.parse_variable()
-
-    # return the statement
-    return NextStatement(variable)
-
-def parse_goto_statement(parser):
+def parse_goto_statement(parser) -> GotoStatement:
+    """ Parse a GOTO statement from the token stream. """
     # set the position
     parser.advance()
 
     # expect the TO keyword
     if parser.current_token.token_type != TokenType.TO:
         raise SyntaxError("Expected 'TO' keyword after 'GO'")
-    
+
     # set the position
     parser.advance()
 
     # parse the line number for the GOTO
     line_number = parse_expression(parser)
 
-    # return the statement
+    # retun the goto statement
     return GotoStatement(line_number)
 
-def parse_gosub_statement(parser):
+def parse_gosub_statement(parser) -> GosubStatement:
+    """ Parse a GOSUB statement from the token stream. """
     # set the position
     parser.advance()
 
