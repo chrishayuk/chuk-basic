@@ -1,9 +1,9 @@
 from contextlib import suppress
 from typing import Optional
 from ..lexer.token_type import TokenType
-from .ast.ast_node import Variable
-from .ast.ast_statement import PrintStatement, ReturnStatement, LetStatement, RemStatement, InputStatement, EndStatement, StopStatement
-from .ast.ast_control_flow import IfStatement, ForStatement, NextStatement, GotoStatement, GosubStatement
+from ..ast.ast_node import Variable
+from ..ast.ast_statement import PrintStatement, ReturnStatement, LetStatement, RemStatement, InputStatement, EndStatement, StopStatement
+from ..ast.ast_control_flow import IfStatement, ForStatement, NextStatement, GotoStatement, GosubStatement
 from .expression_parser import parse_expression, parse_fn_expression
 
 def parse_statement(parser):

@@ -2,8 +2,8 @@ from typing import List, Optional
 from contextlib import suppress
 from ..lexer.token import Token
 from ..lexer.token_type import TokenType
-from .ast.ast_node import Program, Variable
-from .ast.ast_expression import Expression
+from ..ast.ast_node import Program, Variable
+from ..ast.ast_expression import Expression
 from .expression_parser import parse_expression as parse_top_level_expression
 from .statement_parser import parse_statement
 

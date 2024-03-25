@@ -1,7 +1,7 @@
 from typing import Optional
 from contextlib import suppress
-from .ast.ast_node import Variable
-from .ast.ast_expression import Expression, BinaryExpression, FnExpression, Literal, UnaryExpression
+from ..ast.ast_node import Variable
+from ..ast.ast_expression import Expression, BinaryExpression, FnExpression, Literal, UnaryExpression
 from ..lexer.token_type import TokenType
 
 def parse_expression(parser) -> Optional[Expression]:
