@@ -84,37 +84,55 @@ def parse_for_statement(parser):
 
     # parse the for variable
     variable = parser.parse_variable()
-    
+
+    # expect the '=' token
+    with suppress(StopIteration):
+        if parser.current_token.token_type != TokenType.EQ:
+            raise SyntaxError(
+                f"Expected '=' after variable in FOR statement, but got '{parser.current_token.value}' ({parser.current_token.token_type})"
+            )
+    parser.advance()
+
     # parse the start expression for the FOR keyword
-    parser.advance()  # Skip '='
     start_expression = parse_expression(parser)
 
+    # expect the TO keyword
+    with suppress(StopIteration):
+        if parser.current_token.token_type != TokenType.TO:
+            raise SyntaxError(
+                f"Expected 'TO' keyword after start expression in FOR statement, but got '{parser.current_token.value}' ({parser.current_token.token_type})"
+            )
+    parser.advance()
+
     # parse the TO expression
-    parser.advance()  # skip the TO keyword
     end_expression = parse_expression(parser)
 
-    # check for STEP keyword 
+    # check for STEP keyword
+    step_expression = None
     if parser.current_token.token_type == TokenType.STEP:
         # skip the step keyword
         parser.advance()
 
         # parse the step expression
         step_expression = parse_expression(parser)
-    else:
-        # no step expression
-        step_expression = None
 
     # parse the loop body
     loop_body = parse_statement(parser)
 
     # expect the NEXT keyword
-    if parser.current_token.token_type != TokenType.NEXT:
-        raise SyntaxError("Expected 'NEXT' keyword after FOR loop body")
+    with suppress(StopIteration):
+        if parser.current_token.token_type != TokenType.NEXT:
+            raise SyntaxError(
+                f"Expected 'NEXT' keyword after FOR loop body, but got '{parser.current_token.value}' ({parser.current_token.token_type})"
+            )
     parser.advance()
 
     # expect the loop variable
-    if parser.current_token.token_type != TokenType.IDENTIFIER or parser.current_token.value != variable.name:
-        raise SyntaxError("Expected loop variable after 'NEXT' keyword")
+    with suppress(StopIteration):
+        if parser.current_token.token_type != TokenType.IDENTIFIER or parser.current_token.value != variable.name:
+            raise SyntaxError(
+                f"Expected loop variable '{variable.name}' after 'NEXT' keyword, but got '{parser.current_token.value}' ({parser.current_token.token_type})"
+            )
     next_variable = Variable(parser.current_token.value)
     parser.advance()
 
