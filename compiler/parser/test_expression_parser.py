@@ -2,7 +2,7 @@ from ast import *
 from compiler.lexer.token_type import TokenType
 from compiler.lexer.tokenizer import Tokenizer
 from compiler.lexer.token import Token
-from .ast import BinaryExpression, Literal, UnaryExpression, Variable
+from .ast import BinaryExpression, FnExpression, Literal, UnaryExpression, Variable
 from .expression_parser import parse_expression
 from .parser import Parser
 
@@ -72,3 +72,12 @@ def test_parse_parenthesized_expression():
     assert expression.operator.token_type == TokenType.MUL
     assert isinstance(expression.right, Literal)
     assert expression.right.value == 3
+
+
+def test_parse_fn_expression():
+    input_string = "FNSquare(5) = 5 * 5"
+    tokenizer = Tokenizer(input_string)
+    tokens = tokenizer.tokenize()
+    parser = Parser(tokens)
+    expression = parse_expression(parser)
+    assert isinstance(expression, FnExpression)

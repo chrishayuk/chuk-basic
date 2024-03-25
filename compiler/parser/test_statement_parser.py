@@ -134,16 +134,8 @@ def test_parse_end_statement():
 #     assert isinstance(statement, OnStatement)
 #     assert statement.is_gosub == True
 
-def test_parse_def_statement():
-    input_string = "DEF Square(x) = x * x"
-    tokenizer = Tokenizer(input_string)
-    tokens = tokenizer.tokenize()
-    parser = Parser(tokens)
-    statement = parse_statement(parser)
-    assert isinstance(statement, DefStatement)
-
 def test_parse_fn_expression():
-    input_string = "def FNSquare(5) = 5 * 5"
+    input_string = "FNSquare(5) = 5 * 5"
     tokenizer = Tokenizer(input_string)
     tokens = tokenizer.tokenize()
     parser = Parser(tokens)

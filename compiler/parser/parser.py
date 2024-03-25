@@ -10,6 +10,7 @@ class Parser:
         self.current_pos = 0
         self.current_token = self.tokens[self.current_pos] if self.tokens else None
 
+    
     def advance(self):
         self.current_pos += 1
         if self.current_pos < len(self.tokens):

@@ -1,6 +1,6 @@
 from .ast import DefStatement, IfStatement, ForStatement, NextStatement, GotoStatement, GosubStatement, LetStatement, PrintStatement, RemStatement, ReturnStatement, InputStatement, StopStatement, EndStatement, Variable
 from ..lexer.token_type import TokenType
-from .expression_parser import parse_expression, parse_fn_statement
+from .expression_parser import parse_expression, parse_fn_expression
 
 def parse_statement(parser):
     # get the current token type
@@ -33,7 +33,7 @@ def parse_statement(parser):
     elif token_type == TokenType.DEF:
         return parse_def_statement(parser)
     elif token_type == TokenType.FN:
-        return parse_fn_statement(parser)
+        return parse_fn_expression(parser)
     elif token_type == TokenType.END:
         return parse_end_statement(parser)
     else:

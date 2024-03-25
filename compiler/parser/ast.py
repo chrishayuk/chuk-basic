@@ -97,6 +97,7 @@ class Variable(Expression):
         self.name = name
 
 class FnExpression(Expression):
-    def __init__(self, function_name, argument):
-        self.function_name = function_name
+    def __init__(self, name, argument, body):
+        self.name = name
         self.argument = argument
+        self.body = body

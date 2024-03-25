@@ -78,7 +78,7 @@ def parse_primary_expression(parser):
             parser.current_pos += 1
             return parse_primary_expression(parser)
         elif token.token_type == TokenType.FN:
-            return parse_fn_statement(parser)
+            return parse_fn_expression(parser)
 
     return None
 
@@ -99,8 +99,10 @@ def get_operator_precedence(token_type):
     else:
         return 0
     
-def parse_fn_statement(parser):
-    # set the position
+def parse_fn_expression(parser):
+    # expect the FN keyword
+    if parser.current_token.token_type != TokenType.FN:
+        raise SyntaxError("Expected 'FN' keyword")
     parser.advance()
 
     # parse the function name
@@ -113,11 +115,16 @@ def parse_fn_statement(parser):
 
     # parse the argument
     argument = parse_expression(parser)
-
-    # expect the closing parenthesis
-    if parser.current_token.token_type != TokenType.RPAREN:
-        raise SyntaxError("Expected ')' after argument in FN statement")
     parser.advance()
 
-    # return the function call expression
-    return FnExpression(function_name, argument)
+    # expect the '=' sign
+    if parser.current_token.token_type != TokenType.EQ:
+        raise SyntaxError("Expected '=' after argument in FN statement")
+    parser.advance()
+    print("current token type: ", parser.current_token.token_type)
+
+    # parse the function body
+    function_body = parse_expression(parser)
+
+    # return the FnExpression
+    return FnExpression(function_name, argument, function_body)
