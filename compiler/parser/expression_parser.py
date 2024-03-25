@@ -32,14 +32,17 @@ def parse_binary_expression(parser, precedence: int) -> Optional[Expression]:
                 left = BinaryExpression(left, token, right)
             else:
                 break
-        else:
+        elif token.token_type in [TokenType.RPAREN, TokenType.THEN, TokenType.TO, TokenType.EQ, TokenType.ELSE, TokenType.STEP, TokenType.PRINT, TokenType.NEXT]:
+            # These tokens are valid in other contexts, so we should not raise an error here
             break
+        else:
+            raise SyntaxError(f"Unexpected token '{token.value}' ({token.token_type}) while parsing binary expression")
 
     return left
 
 def parse_unary_expression(parser) -> Optional[Expression]:
     """Parse and return a unary expression."""
-    with suppress(IndexError):
+    with suppress(StopIteration):
         # get the token
         token = parser.current_token
 
@@ -53,9 +56,9 @@ def parse_unary_expression(parser) -> Optional[Expression]:
 
 def parse_primary_expression(parser) -> Optional[Expression]:
     """Parse and return a primary expression."""
-    with suppress(IndexError):
+    with suppress(StopIteration):
         # get the current token
-        token = parser.tokens[parser.current_pos]
+        token = parser.current_token
 
         # numbers are literals
         if token.token_type == TokenType.NUMBER:
@@ -73,6 +76,10 @@ def parse_primary_expression(parser) -> Optional[Expression]:
             parser.advance()
             # parse expression handles the right parenthesis
             expression = parse_expression(parser)
+            if parser.current_token is None:
+                raise SyntaxError("Unexpected end of token stream while parsing parenthesized expression")
+            elif parser.current_token.token_type != TokenType.RPAREN:
+                raise SyntaxError(f"Expected closing parenthesis, but got '{parser.current_token.value}' ({parser.current_token.token_type})")
             parser.advance()
             return expression
         # line number
@@ -82,6 +89,8 @@ def parse_primary_expression(parser) -> Optional[Expression]:
             return parse_primary_expression(parser)
         elif token.token_type == TokenType.FN:
             return parse_fn_expression(parser)
+        else:
+            raise SyntaxError(f"Unexpected token '{token.value}' ({token.token_type}) while parsing primary expression")
 
     return None
 
@@ -106,30 +115,36 @@ def get_operator_precedence(token_type: TokenType) -> int:
 def parse_fn_expression(parser) -> Optional[FnExpression]:
     """Parse and return an FN expression."""
     # expect the FN keyword
-    if parser.current_token.token_type != TokenType.FN:
+    if parser.current_token is None or parser.current_token.token_type != TokenType.FN:
         raise SyntaxError("Expected 'FN' keyword")
     parser.advance()
 
     # parse the function name
+    if parser.current_token is None or parser.current_token.token_type != TokenType.IDENTIFIER:
+        raise SyntaxError("Expected function name after 'FN' keyword")
     function_name = Variable(parser.current_token.value)
     parser.advance()
 
     # expect the opening parenthesis
-    if parser.current_token.token_type != TokenType.LPAREN:
+    if parser.current_token is None or parser.current_token.token_type != TokenType.LPAREN:
         raise SyntaxError("Expected '(' after function name in FN statement")
     parser.advance()
 
     # parse the argument
     argument = parse_expression(parser)
+    if argument is None:
+        raise SyntaxError("Expected an expression as the argument in FN statement")
     parser.advance()
 
     # expect the '=' sign
-    if parser.current_token.token_type != TokenType.EQ:
+    if parser.current_token is None or parser.current_token.token_type != TokenType.EQ:
         raise SyntaxError("Expected '=' after argument in FN statement")
     parser.advance()
 
     # parse the function body
     function_body = parse_expression(parser)
+    if function_body is None:
+        raise SyntaxError("Expected an expression as the function body in FN statement")
 
     # return the FnExpression
     return FnExpression(function_name, argument, function_body)

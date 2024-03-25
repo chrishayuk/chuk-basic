@@ -1,3 +1,5 @@
+from contextlib import suppress
+from typing import Optional
 from ..lexer.token_type import TokenType
 from .ast.ast_node import Variable
 from .ast.ast_statement import PrintStatement, ReturnStatement, LetStatement, RemStatement, InputStatement, EndStatement, StopStatement
@@ -41,7 +43,8 @@ def parse_statement(parser):
     else:
         return None
 
-def parse_if_statement(parser):
+def parse_if_statement(parser) -> Optional[IfStatement]:
+    """Parse an IF statement from the token stream."""
     # set the position
     parser.advance()
 
@@ -49,21 +52,28 @@ def parse_if_statement(parser):
     condition = parse_expression(parser)
 
     # skip the THEN keyword
-    parser.advance()
+    with suppress(StopIteration):
+        if parser.current_token.token_type != TokenType.THEN:
+            raise SyntaxError(
+                f"Expected 'THEN' keyword after condition, but got '{parser.current_token.value}' ({parser.current_token.token_type})"
+            )
+        parser.advance()
 
     # parse the THEN statement
     then_statement = parse_statement(parser)
+    if then_statement is None:
+        raise SyntaxError("Expected a statement after 'THEN' keyword")
 
     # check if there is an ELSE clause
-    if parser.current_pos < len(parser.tokens) and parser.tokens[parser.current_pos].token_type == TokenType.ELSE:
+    else_statement = None
+    if parser.current_token is not None and parser.current_token.token_type == TokenType.ELSE:
         # skip the ELSE keyword
         parser.advance()
 
         # parse the ELSE statement
         else_statement = parse_statement(parser)
-    else:
-        # no ELSE clause
-        else_statement = None
+        if else_statement is None:
+            raise SyntaxError("Expected a statement after 'ELSE' keyword")
 
     # if statement
     return IfStatement(condition, then_statement, else_statement)
