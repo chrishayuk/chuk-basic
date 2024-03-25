@@ -6,6 +6,11 @@ from ..lexer.token_type import TokenType
 
 def parse_expression(parser) -> Optional[Expression]:
     """Parse and return the top-level expression in the token stream."""
+    # Check for the ON keyword
+    if parser.current_token.token_type == TokenType.ON:
+        # Handle the ON statement in the control_flow_parser
+        return None
+    
     # parse a binary expression by default
     return parse_binary_expression(parser, 0)
 
@@ -32,7 +37,7 @@ def parse_binary_expression(parser, precedence: int) -> Optional[Expression]:
                 left = BinaryExpression(left, token, right)
             else:
                 break
-        elif token.token_type in [TokenType.RPAREN, TokenType.THEN, TokenType.TO, TokenType.EQ, TokenType.ELSE, TokenType.STEP, TokenType.PRINT, TokenType.NEXT]:
+        elif token.token_type in [TokenType.RPAREN, TokenType.THEN, TokenType.TO, TokenType.SUB, TokenType.EQ, TokenType.ELSE, TokenType.STEP, TokenType.PRINT, TokenType.NEXT, TokenType.GO]:
             # These tokens are valid in other contexts, so we should not raise an error here
             break
         else:

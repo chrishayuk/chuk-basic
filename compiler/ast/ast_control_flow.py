@@ -30,3 +30,9 @@ class GotoStatement(ControlFlowStatement):
 class GosubStatement(ControlFlowStatement):
     def __init__(self, line_number):
         self.line_number = line_number
+
+class OnStatement(ControlFlowStatement):
+    def __init__(self, expression, line_numbers, is_gosub):
+        self.expression = expression
+        self.line_numbers = line_numbers
+        self.is_gosub = is_gosub

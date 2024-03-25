@@ -1,7 +1,7 @@
 from ..lexer.tokenizer import Tokenizer
 from ..ast.ast_expression import FnExpression, BinaryExpression
 from ..ast.ast_statement import Statement, PrintStatement, ReturnStatement, LetStatement, RemStatement, InputStatement, EndStatement, StopStatement
-from ..ast.ast_control_flow import IfStatement, ForStatement, NextStatement, GotoStatement, GosubStatement
+from ..ast.ast_control_flow import IfStatement, ForStatement, GotoStatement, GosubStatement, OnStatement
 from .expression_parser import parse_expression
 from .statement_parser import parse_statement
 from .parser import Parser

@@ -5,7 +5,7 @@ from ..lexer.token_type import TokenType
 from ..ast.ast_node import Variable
 from ..ast.ast_expression import Expression
 from ..ast.ast_statement import Statement
-from ..ast.ast_control_flow import IfStatement, ForStatement, NextStatement, GotoStatement, GosubStatement
+from ..ast.ast_control_flow import IfStatement, ForStatement, NextStatement, GotoStatement, GosubStatement, OnStatement
 from .expression_parser import parse_expression
 from ..parser.basic_statement_parser import parse_basic_statement
 
@@ -25,6 +25,8 @@ def parse_control_flow_statement(parser):
             return parse_gosub_statement(parser)
         else:
             raise SyntaxError("Expected 'TO' or 'SUB' keyword after 'GO'")
+    elif token_type == TokenType.ON:
+        return parse_on_statement(parser)
     else:
         return None
     
@@ -191,3 +193,41 @@ def parse_gosub_statement(parser) -> GosubStatement:
 
     # return the statement
     return GosubStatement(line_number)
+
+def parse_on_statement(parser) -> OnStatement:
+    """ Parse an ON statement from the token stream. """
+    # set the position
+    parser.advance()
+
+    # parse the expression
+    expression = parse_expression(parser)
+    if expression is None:
+        raise SyntaxError("Expected an expression after 'ON' keyword")
+    
+    # expect GO token
+    if parser.current_token.token_type == TokenType.GO:
+        parser.advance()
+    else:
+        raise SyntaxError("Expected 'GOTO' or 'GOSUB' keyword after expression in ON statement")
+
+    # expect the TO or SUB keyword after GO
+    is_gosub = False
+    if parser.current_token.token_type == TokenType.TO:
+        parser.advance()
+    elif parser.current_token.token_type == TokenType.SUB:
+        is_gosub = True
+        parser.advance()
+    else:
+        raise SyntaxError("Expected 'GOTO' or 'GOSUB' keyword after expression in ON statement")
+
+    # parse the line numbers
+    line_numbers = []
+    while parser.current_token.token_type != TokenType.NEWLINE:
+        line_number = parse_expression(parser)
+        line_numbers.append(line_number)
+        if parser.current_token.token_type == TokenType.COMMA:
+            parser.advance()
+        else:
+            break
+
+    return OnStatement(expression, line_numbers, is_gosub)
