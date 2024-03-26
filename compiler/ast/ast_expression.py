@@ -20,7 +20,7 @@ class Literal(Expression):
         self.value = value
 
 class FnExpression(Expression):
-    def __init__(self, name, argument, body):
+    def __init__(self, name, arguments, body):
         self.name = name
-        self.argument = argument
+        self.arguments = arguments
         self.body = body

@@ -1,5 +1,6 @@
 # basic_statement_parser.py
 from ..lexer.token_type import TokenType
+from ..ast.ast_expression import FnExpression
 from ..ast.ast_statement import PrintStatement, ReturnStatement, LetStatement, RemStatement, InputStatement, EndStatement, StopStatement
 from .expression_parser import parse_expression
 
@@ -46,7 +47,7 @@ def parse_input_statement(parser):
 def parse_let_statement(parser):
     # set the position
     parser.advance()
-    
+
     # parse the variable
     variable = parser.parse_variable()
 

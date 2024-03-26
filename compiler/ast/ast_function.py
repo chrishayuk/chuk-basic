@@ -9,3 +9,6 @@ class DefStatement(FunctionStatement):
         self.function_name = function_name
         self.parameters = parameters
         self.function_body = function_body
+
+class FnEndStatement(FunctionStatement):
+    pass

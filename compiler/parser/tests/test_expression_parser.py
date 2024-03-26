@@ -1,4 +1,5 @@
 from ast import *
+
 from ...lexer.token_type import TokenType
 from ...lexer.tokenizer import Tokenizer
 from ...lexer.token import Token
@@ -74,11 +75,14 @@ def test_parse_parenthesized_expression():
     assert isinstance(expression.right, Literal)
     assert expression.right.value == 3
 
-
 def test_parse_fn_expression():
-    input_string = "FNSquare(5) = 5 * 5"
+    input_string = "FNSquare(5)"
     tokenizer = Tokenizer(input_string)
     tokens = tokenizer.tokenize()
     parser = Parser(tokens)
     expression = parse_expression(parser)
     assert isinstance(expression, FnExpression)
+    assert expression.name.name == "Square"
+    assert len(expression.arguments) == 1
+    assert isinstance(expression.arguments[0], Literal)
+    assert expression.arguments[0].value == 5

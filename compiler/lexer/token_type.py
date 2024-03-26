@@ -47,6 +47,7 @@ class TokenType(Enum):
     FOR = 'FOR'
     NEXT = 'NEXT'
     END = 'END'
+    FNEND = 'FNEND'
     STOP = 'STOP'
     DEF = 'DEF'
     SUB = 'SUB'

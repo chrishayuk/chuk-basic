@@ -10,6 +10,8 @@ from .expression_parser import parse_expression
 from ..parser.basic_statement_parser import parse_basic_statement
 
 def parse_control_flow_statement(parser):
+    """ Handler for controlling control flow statements such as IF..THEN..ELSE, FOR..STEP..NEXT, GO..TO, GO..SUB, ON """
+
     # get the current token type
     token_type = parser.current_token.token_type
 
@@ -31,7 +33,7 @@ def parse_control_flow_statement(parser):
         return None
     
 def parse_if_statement(parser) -> Optional[IfStatement]:
-    """Parse an IF statement from the token stream."""
+    """ Parse an IF statement from the token stream. """
     # set the position
     parser.advance()
 
@@ -195,18 +197,7 @@ def parse_gosub_statement(parser) -> GosubStatement:
     return GosubStatement(line_number)
 
 def parse_on_statement(parser) -> OnStatement:
-    """
-    Parse an ON statement from the token stream.
-
-    Args:
-        parser (Parser): The parser instance.
-
-    Returns:
-        OnStatement: The parsed ON statement.
-
-    Raises:
-        SyntaxError: If the ON statement is not well-formed.
-    """
+    """ Parse an ON statement from the token stream. """
     # set the position
     parser.advance()
 

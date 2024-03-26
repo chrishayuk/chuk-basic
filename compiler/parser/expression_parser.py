@@ -6,6 +6,10 @@ from ..lexer.token_type import TokenType
 
 def parse_expression(parser) -> Optional[Expression]:
     """Parse and return the top-level expression in the token stream."""
+    # Check if there are any tokens left
+    if parser.current_token is None:
+        return None
+
     # Check for the ON keyword
     if parser.current_token.token_type == TokenType.ON:
         # Handle the ON statement in the control_flow_parser
@@ -133,24 +137,31 @@ def parse_fn_expression(parser) -> Optional[FnExpression]:
 
     # expect the opening parenthesis
     if parser.current_token is None or parser.current_token.token_type != TokenType.LPAREN:
-        raise SyntaxError("Expected '(' after function name in FN statement")
+        raise SyntaxError("Expected '(' after function name in FN expression")
     parser.advance()
 
-    # parse the argument
-    argument = parse_expression(parser)
-    if argument is None:
-        raise SyntaxError("Expected an expression as the argument in FN statement")
-    parser.advance()
+    # parse the argument list
+    arguments = []
+    while parser.current_token is not None and parser.current_token.token_type != TokenType.RPAREN:
+        argument = parse_expression(parser)
+        if argument is None:
+            raise SyntaxError("Expected an expression as an argument in FN expression")
+        arguments.append(argument)
+        
+        if parser.current_token is None:
+            raise SyntaxError("Unexpected end of token stream while parsing FN expression arguments")
+        elif parser.current_token.token_type == TokenType.COMMA:
+            parser.advance()
+        elif parser.current_token.token_type != TokenType.RPAREN:
+            raise SyntaxError(f"Expected ',' or ')' after argument in FN expression, but got '{parser.current_token.value}' ({parser.current_token.token_type})")
 
-    # expect the '=' sign
-    if parser.current_token is None or parser.current_token.token_type != TokenType.EQ:
-        raise SyntaxError("Expected '=' after argument in FN statement")
+    # expect the closing parenthesis
+    if parser.current_token is None or parser.current_token.token_type != TokenType.RPAREN:
+        raise SyntaxError("Expected ')' after argument list in FN expression")
     parser.advance()
 
     # parse the function body
     function_body = parse_expression(parser)
-    if function_body is None:
-        raise SyntaxError("Expected an expression as the function body in FN statement")
 
-    # return the FnExpression
-    return FnExpression(function_name, argument, function_body)
+    # return the FnExpression without a function body
+    return FnExpression(function_name, arguments, function_body)
