@@ -37,7 +37,7 @@ def parse_def_statement(parser):
     parser.advance()
 
     # expect the '=' sign or a newline
-    print(parser.current_token.token_type)
+    #print(parser.current_token.token_type)
     if parser.current_token.token_type not in [TokenType.EQ, TokenType.NEWLINE]:
         raise SyntaxError("Expected '=' or newline after parameter list in DEF statement")
 
