@@ -1,7 +1,5 @@
 from ...lexer.tokenizer import Tokenizer
-from ...ast.ast_expression import FnExpression
 from ...ast.ast_statement import PrintStatement, ReturnStatement, LetStatement, RemStatement, InputStatement, EndStatement, StopStatement
-from ..expression_parser import parse_expression
 from ..statement_parser import parse_statement
 from ..parser import Parser
 
@@ -60,11 +58,3 @@ def test_parse_end_statement():
     parser = Parser(tokens)
     statement = parse_statement(parser)
     assert isinstance(statement, EndStatement)
-
-# def test_parse_fn_expression():
-#     input_string = "DEF FNSquare(x) = x * x"
-#     tokenizer = Tokenizer(input_string)
-#     tokens = tokenizer.tokenize()
-#     parser = Parser(tokens)
-#     expression = parse_expression(parser)
-#     assert isinstance(expression, FnExpression)
