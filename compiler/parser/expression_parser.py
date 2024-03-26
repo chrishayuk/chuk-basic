@@ -37,10 +37,11 @@ def parse_binary_expression(parser, precedence: int) -> Optional[Expression]:
                 left = BinaryExpression(left, token, right)
             else:
                 break
-        elif token.token_type in [TokenType.RPAREN, TokenType.THEN, TokenType.TO, TokenType.SUB, TokenType.EQ, TokenType.ELSE, TokenType.STEP, TokenType.PRINT, TokenType.NEXT, TokenType.GO]:
-            # These tokens are valid in other contexts, so we should not raise an error here
+        elif token.token_type in [TokenType.RPAREN, TokenType.THEN, TokenType.TO, TokenType.SUB, TokenType.EQ, TokenType.ELSE, TokenType.STEP, TokenType.PRINT, TokenType.NEXT, TokenType.GO, TokenType.COMMA]:
+            # These tokens are valid in other contexts, so we should break out of the loop
             break
         else:
+            # Raise a SyntaxError for any other unexpected token
             raise SyntaxError(f"Unexpected token '{token.value}' ({token.token_type}) while parsing binary expression")
 
     return left

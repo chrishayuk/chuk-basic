@@ -195,7 +195,18 @@ def parse_gosub_statement(parser) -> GosubStatement:
     return GosubStatement(line_number)
 
 def parse_on_statement(parser) -> OnStatement:
-    """ Parse an ON statement from the token stream. """
+    """
+    Parse an ON statement from the token stream.
+
+    Args:
+        parser (Parser): The parser instance.
+
+    Returns:
+        OnStatement: The parsed ON statement.
+
+    Raises:
+        SyntaxError: If the ON statement is not well-formed.
+    """
     # set the position
     parser.advance()
 
@@ -203,31 +214,33 @@ def parse_on_statement(parser) -> OnStatement:
     expression = parse_expression(parser)
     if expression is None:
         raise SyntaxError("Expected an expression after 'ON' keyword")
-    
-    # expect GO token
+
+    # expect the GOTO or GOSUB keyword
+    is_gosub = False
     if parser.current_token.token_type == TokenType.GO:
         parser.advance()
-    else:
-        raise SyntaxError("Expected 'GOTO' or 'GOSUB' keyword after expression in ON statement")
-
-    # expect the TO or SUB keyword after GO
-    is_gosub = False
-    if parser.current_token.token_type == TokenType.TO:
-        parser.advance()
-    elif parser.current_token.token_type == TokenType.SUB:
-        is_gosub = True
+        if parser.current_token.token_type == TokenType.TO:
+            is_gosub = False
+        elif parser.current_token.token_type == TokenType.SUB:
+            is_gosub = True
+        else:
+            raise SyntaxError("Expected 'TO' or 'SUB' keyword after 'GO' in ON statement")
         parser.advance()
     else:
         raise SyntaxError("Expected 'GOTO' or 'GOSUB' keyword after expression in ON statement")
 
     # parse the line numbers
     line_numbers = []
-    while parser.current_token.token_type != TokenType.NEWLINE:
-        line_number = parse_expression(parser)
-        line_numbers.append(line_number)
-        if parser.current_token.token_type == TokenType.COMMA:
-            parser.advance()
-        else:
-            break
+    if parser.current_token is not None:
+        while parser.current_token.token_type != TokenType.NEWLINE:
+            line_number = parse_expression(parser)
+            if line_number is not None:
+                line_numbers.append(line_number)
+            if parser.current_token is not None and parser.current_token.token_type == TokenType.COMMA:
+                parser.advance()
+            else:
+                break
+    else:
+        raise SyntaxError("Expected at least one line number after 'GOTO' or 'GOSUB' keyword in ON statement")
 
     return OnStatement(expression, line_numbers, is_gosub)
