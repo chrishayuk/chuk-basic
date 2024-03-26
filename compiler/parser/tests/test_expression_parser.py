@@ -1,11 +1,11 @@
 from ast import *
-from ..lexer.token_type import TokenType
-from ..lexer.tokenizer import Tokenizer
-from ..lexer.token import Token
-from ..ast.ast_node import Variable
-from ..ast.ast_expression import BinaryExpression, FnExpression, Literal, UnaryExpression
-from .expression_parser import parse_expression
-from .parser import Parser
+from ...lexer.token_type import TokenType
+from ...lexer.tokenizer import Tokenizer
+from ...lexer.token import Token
+from ...ast.ast_node import Variable
+from ...ast.ast_expression import BinaryExpression, FnExpression, Literal, UnaryExpression
+from ..expression_parser import parse_expression
+from ..parser import Parser
 
 def test_parse_literal_expression():
     # empty tokens

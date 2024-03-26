@@ -1,7 +1,7 @@
 TODO:
 
 - Complete README
-- Handle ON statement
+- Split out tests in refactor
 - Handle DEF..FN
 - Handle built-in functions
 - Handle DIM

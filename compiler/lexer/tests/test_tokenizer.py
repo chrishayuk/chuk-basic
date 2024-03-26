@@ -1,5 +1,5 @@
-from .tokenizer import Tokenizer
-from .token_type import TokenType
+from ..tokenizer import Tokenizer
+from ..token_type import TokenType
 
 def test_empty_input():
     tokenizer = Tokenizer("")

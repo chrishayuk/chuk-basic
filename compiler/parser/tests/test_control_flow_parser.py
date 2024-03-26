@@ -1,9 +1,9 @@
-from ..lexer.tokenizer import Tokenizer
-from ..ast.ast_expression import BinaryExpression
-from ..ast.ast_statement import Statement, PrintStatement
-from ..ast.ast_control_flow import IfStatement, ForStatement, GotoStatement, GosubStatement, OnStatement
-from .statement_parser import parse_statement
-from .parser import Parser
+from ...lexer.tokenizer import Tokenizer
+from ...ast.ast_expression import BinaryExpression
+from ...ast.ast_statement import Statement, PrintStatement
+from ...ast.ast_control_flow import IfStatement, ForStatement, GotoStatement, GosubStatement, OnStatement
+from ..statement_parser import parse_statement
+from ..parser import Parser
 
 def test_parse_if_statement():
     input_string = "IF x > 10 THEN PRINT \"Greater than 10\" ELSE PRINT \"Less than or equal to 10\""
