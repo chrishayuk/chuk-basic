@@ -54,11 +54,11 @@ class Parser:
             if self.current_token.token_type == TokenType.NUMBER:
                 # peek the next token
                 next_token = self.peek_next_token()
-                
+
                 # if next token is a statement, skip on
-                if next_token and next_token.token_type in [TokenType.LET, TokenType.IF, TokenType.PRINT, ...]:
+                if next_token and next_token.token_type in [TokenType.DEF, TokenType.LET, TokenType.IF, TokenType.PRINT, ...]:
                     self.advance()
-            
+
             # parse the statement
             statement = self.parse_statement()
 
@@ -69,7 +69,7 @@ class Parser:
 
             # skip past the statement
             self.advance()
-        
+
         # finished parsing
         print("Finished parsing.")
 
