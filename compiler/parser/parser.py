@@ -1,21 +1,27 @@
 from typing import List, Optional
-from contextlib import suppress
+
 from ..lexer.token import Token
 from ..lexer.token_type import TokenType
 from ..ast.ast_node import Program, Variable
 from ..ast.ast_expression import Expression
-from .expression_parser import parse_expression as parse_top_level_expression
-from ..lexer.token_type import TokenType
-from .statements.end_statement import EndStatementParser
-from .statements.input_statement import InputStatementParser
-from .statements.let_statement import LetStatementParser
-from .statements.print_statement import PrintStatementParser
-from .statements.rem_statement import RemStatementParser
-from .statements.return_statement import ReturnStatementParser
-from .statements.stop_statement import StopStatementParser
+from ..ast.ast_statement import Statement
+# Ensure all statement and control flow statement parsers are correctly imported
+from .base_statements.end_statement import EndStatementParser
+from .base_statements.input_statement import InputStatementParser
+from .base_statements.let_statement import LetStatementParser
+from .base_statements.print_statement import PrintStatementParser
+from .base_statements.rem_statement import RemStatementParser
+from .base_statements.return_statement import ReturnStatementParser
+from .base_statements.stop_statement import StopStatementParser
+from .control_statements.if_statement import IfStatementParser
+from .control_statements.for_statement import ForStatementParser
+from .control_statements.gosub_statement import GoSubStatementParser
+from .control_statements.goto_statement import GoToStatementParser
+from .control_statements.on_statement import OnStatementParser
+
 
 class Parser:
-    """A parser for the BASIC programming language."""
+    """A parser for the BASIC programming language, transforming a series of tokens into an abstract syntax tree."""
 
     def __init__(self, tokens: List[Token]):
         self.tokens = tokens
@@ -23,92 +29,60 @@ class Parser:
         self.current_token = self.tokens[self.current_pos] if self.tokens else None
 
     def advance(self):
+        """Advance to the next token in the stream."""
         self.current_pos += 1
-        if self.current_pos < len(self.tokens):
-            self.current_token = self.tokens[self.current_pos]
-        else:
-            self.current_token = None
+        self.current_token = self.tokens[self.current_pos] if self.current_pos < len(self.tokens) else None
 
     def parse(self) -> Program:
-        """Parse the token stream and return an AST representation."""
+        """Parse the token stream to generate a Program AST node."""
         statements = []
-
-        # loop through while we have tokens
         while self.current_token:
-            # parse the end token
             statement = self.parse_statement()
-
-            # append the end token
             if statement:
                 statements.append(statement)
-
-            # we got an end tokens
-            if self.current_token and self.current_token.token_type == TokenType.END:
-                # Exit the loop after processing the END statement
-                break  
-            else:
-                # advance the token
-                self.advance()
-
-        # return the statements as a program
+            self.advance()  # Always advance at the end of the loop
         return Program(statements)
 
-
-    def parse_top_level_expression(self) -> Optional[Expression]:
-        """Parse and return the top-level expression in the token stream."""
-        return parse_top_level_expression(self)
-    
-    def parse_variable(self):
-        token = self.current_token
-        if token.token_type == TokenType.IDENTIFIER:
+    def parse_variable(self) -> Variable:
+        """Parse a variable from the current token."""
+        if self.current_token.token_type == TokenType.IDENTIFIER:
+            var_name = self.current_token.value
             self.advance()
-            return Variable(token.value)
-        else:
-            raise SyntaxError(f"Expected variable, but got {token.token_type}")
-    
-    def parse_basic_statement(self):
-        token_type = self.current_token.token_type
-        statement_parser = None
+            return Variable(var_name)
+        raise SyntaxError(f"Expected variable, but got {self.current_token.token_type}")
 
-        # check the various statement types
-        if token_type == TokenType.RETURN:
-            statement_parser = ReturnStatementParser(self)
-        elif token_type == TokenType.INPUT:
-            statement_parser = InputStatementParser(self)
-        elif token_type == TokenType.LET:
-            statement_parser = LetStatementParser(self)
-        elif token_type == TokenType.REM:
-            statement_parser = RemStatementParser(self)
-        elif token_type == TokenType.STOP:
-            statement_parser = StopStatementParser(self)
-        elif token_type == TokenType.PRINT:
-            statement_parser = PrintStatementParser(self)
-        elif token_type == TokenType.END:
-            statement_parser = EndStatementParser(self)
-        else:
-            return None
+    def parse_statement(self) -> Optional[Statement]:
+        """Parse a single statement from the current token."""
+        token_type = self.current_token.token_type
         
-        # parse
-        return statement_parser.parse() if statement_parser else None
-    
+        # Special handling for GOTO and GOSUB statements
+        if token_type == TokenType.GO:
+            # Look ahead to the next token to decide if it's GOTO or GOSUB
+            next_token_type = self.tokens[self.current_pos + 1].token_type if self.current_pos + 1 < len(self.tokens) else None
+            if next_token_type == TokenType.TO:
+                return GoToStatementParser(self).parse()
+            elif next_token_type == TokenType.SUB:
+                return GoSubStatementParser(self).parse()
+            else:
+                raise SyntaxError("Expected 'TO' or 'SUB' after 'GO'")
 
-    def parse_statement(self):
-        # get the current token type
-        token_type = self.current_token.token_type
+        # Basic and other control flow statements parsing
+        statement_parsers = {
+            TokenType.RETURN: ReturnStatementParser,
+            TokenType.INPUT: InputStatementParser,
+            TokenType.LET: LetStatementParser,
+            TokenType.REM: RemStatementParser,
+            TokenType.STOP: StopStatementParser,
+            TokenType.PRINT: PrintStatementParser,
+            TokenType.END: EndStatementParser,
+            TokenType.IF: IfStatementParser,
+            TokenType.FOR: ForStatementParser,
+            TokenType.ON: OnStatementParser,
+            # Additional control flow or other statements can be added here
+        }
+        parser_class = statement_parsers.get(token_type)
+        if parser_class:
+            return parser_class(self).parse()
 
-        # parse the statements
-        #if token_type == TokenType.DEF:
-        #    return parse_def_statement(parser)
-        #else:
-        #    # parse control statement
-        #    basic = parse_control_flow_statement(parser)
-        #    if basic is not None:
-        #        return basic
-
-        # parse basic statement
-        basic = self.parse_basic_statement() 
-        if basic is not None:
-            return basic
-            
-        # not found
+        # Return None if no matching parser is found
         return None

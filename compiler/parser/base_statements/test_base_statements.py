@@ -20,9 +20,10 @@ def test_parse_input_statement():
     tokens = tokenizer.tokenize()
     parser = Parser(tokens)
     program = parser.parse()
-    assert isinstance(program, Program)  # Ensure we have a Program object
-    assert len(program.statements) == 1  # Ensure there is exactly one statement in the Program
-    assert isinstance(program.statements[0], InputStatement)  # Check the type of the statement
+    assert len(program.statements) == 1
+    statement = program.statements[0]
+    assert isinstance(statement, InputStatement)
+    assert statement.variable.name == "x"  # Verify the variable name
 
 
 def test_parse_let_statement():
@@ -31,9 +32,11 @@ def test_parse_let_statement():
     tokens = tokenizer.tokenize()
     parser = Parser(tokens)
     program = parser.parse()
-    assert isinstance(program, Program)  # Ensure we have a Program object
-    assert len(program.statements) == 1  # Ensure there is exactly one statement in the Program
-    assert isinstance(program.statements[0], LetStatement)  # Check the type of the statement
+    assert len(program.statements) == 1
+    statement = program.statements[0]
+    assert isinstance(statement, LetStatement)
+    assert statement.variable.name == "x"  # Check the variable name
+    assert statement.expression.value == 10  # Check the assigned value
 
 
 def test_parse_rem_statement():
@@ -64,9 +67,10 @@ def test_parse_print_statement():
     tokens = tokenizer.tokenize()
     parser = Parser(tokens)
     program = parser.parse()
-    assert isinstance(program, Program)  # Ensure we have a Program object
-    assert len(program.statements) == 1  # Ensure there is exactly one statement in the Program
-    assert isinstance(program.statements[0], PrintStatement)  # Check the type of the statement
+    assert len(program.statements) == 1
+    statement = program.statements[0]
+    assert isinstance(statement, PrintStatement)
+    assert statement.expression.value == "Hello, world!"  # Verify the printed string
 
 
 def test_parse_end_statement():
