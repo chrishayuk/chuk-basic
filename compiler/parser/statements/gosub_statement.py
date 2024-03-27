@@ -1,7 +1,6 @@
 from ...lexer.token_type import TokenType
 from ...ast.ast_control_flow import GosubStatement
 from .base_statement_parser import BaseStatementParser
-from ..expression_parser import parse_expression
 
 class GoSubStatementParser(BaseStatementParser):
     def parse(self):
@@ -22,7 +21,7 @@ class GoSubStatementParser(BaseStatementParser):
         self.parser.advance()
 
         # Parse the line number for the GOSUB
-        line_number = parse_expression(self.parser)
+        line_number = self.parser.parse_expression()
 
         # Return the GosubStatement
         return GosubStatement(line_number)

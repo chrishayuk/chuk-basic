@@ -1,7 +1,6 @@
 from ...lexer.token_type import TokenType
 from ...ast.ast_node import Variable
 from ...ast.ast_control_flow import ForStatement, NextStatement
-from ..expression_parser import parse_expression
 from .base_statement_parser import BaseStatementParser
 
 class ForStatementParser(BaseStatementParser):
@@ -20,7 +19,7 @@ class ForStatementParser(BaseStatementParser):
         self.parser.advance()
 
         # Parse the start expression
-        start_expression = parse_expression(self.parser)
+        start_expression = self.parser.parse_expression()
 
         # Expect and advance past 'TO'
         if self.parser.current_token.token_type != TokenType.TO:
@@ -28,7 +27,7 @@ class ForStatementParser(BaseStatementParser):
         self.parser.advance()
 
         # Parse the end expression
-        end_expression = parse_expression(self.parser)
+        end_expression = self.parser.parse_expression()
 
         # Optionally parse the 'STEP' expression
         step_expression = self.parse_step_expression()
@@ -52,7 +51,7 @@ class ForStatementParser(BaseStatementParser):
             self.parser.advance()
 
             # parse the step expression
-            step_expression = parse_expression(self.parser)
+            step_expression = self.parser.parse_expression()
         return step_expression
 
     def parse_loop_body(self):

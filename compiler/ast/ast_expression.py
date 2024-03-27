@@ -1,4 +1,6 @@
+from typing import List
 from .ast_node import ASTNode
+from .ast_node import Variable
 
 class Expression(ASTNode):
     def __repr__(self):
@@ -20,7 +22,6 @@ class Literal(Expression):
         self.value = value
 
 class FnExpression(Expression):
-    def __init__(self, name, arguments, body):
+    def __init__(self, name: Variable, arguments: List[Expression]):
         self.name = name
         self.arguments = arguments
-        self.body = body

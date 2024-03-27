@@ -1,5 +1,4 @@
 from typing import List, Optional
-
 from ..lexer.token import Token
 from ..lexer.token_type import TokenType
 from ..ast.ast_node import Program, Variable
@@ -18,6 +17,10 @@ from .statements.for_statement import ForStatementParser
 from .statements.gosub_statement import GoSubStatementParser
 from .statements.goto_statement import GoToStatementParser
 from .statements.on_statement import OnStatementParser
+from .expressions.binary_expression import BinaryExpressionParser
+from .expressions.primary_expression import PrimaryExpressionParser
+from .expressions.unary_expression import UnaryExpressionParser
+from .expressions.function_expression import FnExpressionParser
 
 
 class Parser:
@@ -33,14 +36,27 @@ class Parser:
         self.current_pos += 1
         self.current_token = self.tokens[self.current_pos] if self.current_pos < len(self.tokens) else None
 
+    def peek_next_token(self) -> Optional[Token]:
+        # Look ahead to the next token without consuming it
+        next_pos = self.current_pos + 1
+        if next_pos < len(self.tokens):
+            return self.tokens[next_pos]
+        return None
+
     def parse(self) -> Program:
-        """Parse the token stream to generate a Program AST node."""
+        print("Starting parsing...")  # Debug print
         statements = []
         while self.current_token:
+            print(f"Current token: {self.current_token}")  # Debug print
+            if self.current_token.token_type == TokenType.NUMBER:
+                next_token = self.peek_next_token()
+                if next_token and next_token.token_type in [TokenType.LET, TokenType.IF, TokenType.PRINT, ...]:  # Add all statement initial tokens here
+                    self.advance()
             statement = self.parse_statement()
             if statement:
                 statements.append(statement)
-            self.advance()  # Always advance at the end of the loop
+            self.advance()
+        print("Finished parsing.")  # Debug print
         return Program(statements)
 
     def parse_variable(self) -> Variable:
@@ -50,6 +66,31 @@ class Parser:
             self.advance()
             return Variable(var_name)
         raise SyntaxError(f"Expected variable, but got {self.current_token.token_type}")
+    
+    def parse_expression(self) -> Expression:
+        # Check if the current token is a unary operator
+        if self.current_token and self.current_token.token_type in [TokenType.PLUS, TokenType.MINUS, TokenType.NOT]:
+            # Parse a unary expression
+            return UnaryExpressionParser(self).parse()
+
+        # Check if the current token is the FN keyword
+        if self.current_token and self.current_token.token_type == TokenType.FN:
+            # Parse an FN expression
+            return FnExpressionParser(self).parse()
+
+        # Parse a primary expression
+        left_expression = PrimaryExpressionParser(self).parse()
+
+        # Check if the current token is a binary operator
+        while self.current_token and self.current_token.token_type in [
+            TokenType.PLUS, TokenType.MINUS, TokenType.MUL, TokenType.DIV, TokenType.POW,
+            TokenType.AND, TokenType.OR,
+            TokenType.EQ, TokenType.NE, TokenType.LT, TokenType.LE, TokenType.GT, TokenType.GE
+        ]:
+            # Parse a binary expression
+            left_expression = BinaryExpressionParser(self).parse(left_expression)
+
+        return left_expression
 
     def parse_statement(self) -> Optional[Statement]:
         """Parse a single statement from the current token."""

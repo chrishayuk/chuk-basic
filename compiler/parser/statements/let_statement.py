@@ -1,5 +1,5 @@
+from ...lexer.token_type import TokenType
 from ...ast.ast_statement import LetStatement
-from ..expression_parser import parse_expression
 from .base_statement_parser import BaseStatementParser
 
 class LetStatementParser(BaseStatementParser):
@@ -7,14 +7,16 @@ class LetStatementParser(BaseStatementParser):
         # Advance past the 'LET' token
         self.parser.advance()
 
-        # parse the variable
+        # Parse the variable
         variable = self.parser.parse_variable()
 
-        # skip the equals sign e.g. LET x = 1
+        # Expect an equals sign
+        if self.parser.current_token.token_type != TokenType.EQ:
+            raise SyntaxError("Expected '=' after variable in LET statement")
         self.parser.advance()
 
-        # parse the expression for the let e.g. LET x = 1
-        expression = parse_expression(self.parser)
+        # Parse the expression for the LET statement
+        expression = self.parser.parse_expression()
 
-        # return the statement
+        # Return the LET statement
         return LetStatement(variable, expression)

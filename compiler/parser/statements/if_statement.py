@@ -1,7 +1,5 @@
-from contextlib import suppress
 from ...lexer.token_type import TokenType
 from ...ast.ast_control_flow import IfStatement
-from ..expression_parser import parse_expression
 from .base_statement_parser import BaseStatementParser
 
 class IfStatementParser(BaseStatementParser):
@@ -12,7 +10,7 @@ class IfStatementParser(BaseStatementParser):
         self.parser.advance()
 
         # Parse the condition
-        condition = parse_expression(self.parser)
+        condition = self.parser.parse_expression()
 
         # Expect and skip the 'THEN' keyword
         if self.parser.current_token.token_type != TokenType.THEN:
