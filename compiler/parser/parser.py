@@ -4,7 +4,6 @@ from ..lexer.token_type import TokenType
 from ..ast.ast_node import Program, Variable
 from ..ast.ast_expression import Expression
 from ..ast.ast_statement import Statement
-# Ensure all statement and control flow statement parsers are correctly imported
 from .statements.end_statement import EndStatementParser
 from .statements.input_statement import InputStatementParser
 from .statements.let_statement import LetStatementParser
@@ -20,7 +19,7 @@ from .statements.on_statement import OnStatementParser
 from .expressions.binary_expression import BinaryExpressionParser
 from .expressions.primary_expression import PrimaryExpressionParser
 from .expressions.unary_expression import UnaryExpressionParser
-from .expressions.function_expression import FnExpressionParser
+from .expressions.fn_expression import FnExpressionParser
 
 
 class Parser:
@@ -44,30 +43,57 @@ class Parser:
         return None
 
     def parse(self) -> Program:
-        print("Starting parsing...")  # Debug print
         statements = []
+
+        # loop through each token
         while self.current_token:
-            print(f"Current token: {self.current_token}")  # Debug print
+            # Debug print
+            print(f"Current token: {self.current_token}")
+
+            # check if we're a number
             if self.current_token.token_type == TokenType.NUMBER:
+                # peek the next token
                 next_token = self.peek_next_token()
-                if next_token and next_token.token_type in [TokenType.LET, TokenType.IF, TokenType.PRINT, ...]:  # Add all statement initial tokens here
+                
+                # if next token is a statement, skip on
+                if next_token and next_token.token_type in [TokenType.LET, TokenType.IF, TokenType.PRINT, ...]:
                     self.advance()
+            
+            # parse the statement
             statement = self.parse_statement()
+
+            # if a statement
             if statement:
+                # add the statement to the list
                 statements.append(statement)
+
+            # skip past the statement
             self.advance()
-        print("Finished parsing.")  # Debug print
+        
+        # finished parsing
+        print("Finished parsing.")
+
+        # return the program
         return Program(statements)
 
     def parse_variable(self) -> Variable:
         """Parse a variable from the current token."""
         if self.current_token.token_type == TokenType.IDENTIFIER:
+            # get the variable name
             var_name = self.current_token.value
+
+            # skip past the variable name
             self.advance()
+
+            # return a variable
             return Variable(var_name)
+        
+        # error
         raise SyntaxError(f"Expected variable, but got {self.current_token.token_type}")
     
     def parse_expression(self) -> Expression:
+        """Parse an expression from the current token."""
+
         # Check if the current token is a unary operator
         if self.current_token and self.current_token.token_type in [TokenType.PLUS, TokenType.MINUS, TokenType.NOT]:
             # Parse a unary expression
@@ -109,6 +135,7 @@ class Parser:
 
         # Basic and other control flow statements parsing
         statement_parsers = {
+            # basic
             TokenType.RETURN: ReturnStatementParser,
             TokenType.INPUT: InputStatementParser,
             TokenType.LET: LetStatementParser,
@@ -116,10 +143,10 @@ class Parser:
             TokenType.STOP: StopStatementParser,
             TokenType.PRINT: PrintStatementParser,
             TokenType.END: EndStatementParser,
+            # control flows
             TokenType.IF: IfStatementParser,
             TokenType.FOR: ForStatementParser,
             TokenType.ON: OnStatementParser,
-            # Additional control flow or other statements can be added here
         }
         parser_class = statement_parsers.get(token_type)
         if parser_class:
