@@ -4,7 +4,7 @@ from .base_statement_parser import BaseStatementParser
 
 class ReturnStatementParser(BaseStatementParser):
     def parse(self):
-        # set the position
+        # Advance past 'RETURN'
         self.parser.advance()
 
         # return the statement

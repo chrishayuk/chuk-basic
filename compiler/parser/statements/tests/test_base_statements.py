@@ -1,7 +1,7 @@
-from ...lexer.tokenizer import Tokenizer
-from ...ast.ast_node import Program
-from ...ast.ast_statement import PrintStatement, ReturnStatement, LetStatement, RemStatement, InputStatement, EndStatement, StopStatement
-from ..parser import Parser
+from ....lexer.tokenizer import Tokenizer
+from ....ast.ast_node import Program
+from ....ast.ast_statement import PrintStatement, ReturnStatement, LetStatement, RemStatement, InputStatement, EndStatement, StopStatement
+from ...parser import Parser
 
 def test_parse_return_statement():
     input_string = "RETURN"

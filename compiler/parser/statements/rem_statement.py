@@ -4,13 +4,13 @@ from .base_statement_parser import BaseStatementParser
 
 class RemStatementParser(BaseStatementParser):
     def parse(self):
-        # set the position
+        # Advance past 'REM'
         self.parser.advance()
 
         # get the comment
         comment = self.parser.current_token.value if self.parser.current_token else ""
 
-        # set the position
+        # Advance past the comment
         self.parser.advance()
 
         # return the statement

@@ -6,18 +6,18 @@ from ..ast.ast_node import Program, Variable
 from ..ast.ast_expression import Expression
 from ..ast.ast_statement import Statement
 # Ensure all statement and control flow statement parsers are correctly imported
-from .base_statements.end_statement import EndStatementParser
-from .base_statements.input_statement import InputStatementParser
-from .base_statements.let_statement import LetStatementParser
-from .base_statements.print_statement import PrintStatementParser
-from .base_statements.rem_statement import RemStatementParser
-from .base_statements.return_statement import ReturnStatementParser
-from .base_statements.stop_statement import StopStatementParser
-from .control_statements.if_statement import IfStatementParser
-from .control_statements.for_statement import ForStatementParser
-from .control_statements.gosub_statement import GoSubStatementParser
-from .control_statements.goto_statement import GoToStatementParser
-from .control_statements.on_statement import OnStatementParser
+from .statements.end_statement import EndStatementParser
+from .statements.input_statement import InputStatementParser
+from .statements.let_statement import LetStatementParser
+from .statements.print_statement import PrintStatementParser
+from .statements.rem_statement import RemStatementParser
+from .statements.return_statement import ReturnStatementParser
+from .statements.stop_statement import StopStatementParser
+from .statements.if_statement import IfStatementParser
+from .statements.for_statement import ForStatementParser
+from .statements.gosub_statement import GoSubStatementParser
+from .statements.goto_statement import GoToStatementParser
+from .statements.on_statement import OnStatementParser
 
 
 class Parser:

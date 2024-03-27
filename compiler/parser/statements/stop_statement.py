@@ -4,7 +4,7 @@ from .base_statement_parser import BaseStatementParser
 
 class StopStatementParser(BaseStatementParser):
     def parse(self):
-        # set the position
+        # Advance past 'STOP'
         self.parser.advance()
 
         # return the statement

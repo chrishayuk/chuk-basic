@@ -1,9 +1,9 @@
 from ...lexer.token_type import TokenType
 from ...ast.ast_control_flow import GotoStatement
-from .base_control_statement_parser import BaseControlStatementParser
+from .base_statement_parser import BaseStatementParser
 from ..expression_parser import parse_expression
 
-class GoToStatementParser(BaseControlStatementParser):
+class GoToStatementParser(BaseStatementParser):
     def parse(self):
         """Parse a GOTO statement from the token stream."""
 

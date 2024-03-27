@@ -1,11 +1,10 @@
-from contextlib import suppress
 from ...lexer.token_type import TokenType
 from ...ast.ast_node import Variable
 from ...ast.ast_control_flow import ForStatement, NextStatement
 from ..expression_parser import parse_expression
-from .base_control_statement_parser import BaseControlStatementParser
+from .base_statement_parser import BaseStatementParser
 
-class ForStatementParser(BaseControlStatementParser):
+class ForStatementParser(BaseStatementParser):
     def parse(self):
         """Parse a FOR loop statement from the token stream."""
 

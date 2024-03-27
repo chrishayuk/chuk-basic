@@ -4,7 +4,7 @@ from .base_statement_parser import BaseStatementParser
 
 class PrintStatementParser(BaseStatementParser):
     def parse(self):
-        # set the position
+        # Advance past 'PRINT'
         self.parser.advance()
 
         # parse the expression

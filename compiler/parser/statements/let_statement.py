@@ -4,7 +4,7 @@ from .base_statement_parser import BaseStatementParser
 
 class LetStatementParser(BaseStatementParser):
     def parse(self):
-        # set the position
+        # Advance past the 'LET' token
         self.parser.advance()
 
         # parse the variable

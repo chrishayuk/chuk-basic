@@ -1,12 +1,12 @@
 from ...lexer.token_type import TokenType
 from ...ast.ast_control_flow import GosubStatement
-from .base_control_statement_parser import BaseControlStatementParser
+from .base_statement_parser import BaseStatementParser
 from ..expression_parser import parse_expression
 
-class GoSubStatementParser(BaseControlStatementParser):
+class GoSubStatementParser(BaseStatementParser):
     def parse(self):
         """Parse a GOSUB statement from the token stream."""
-
+        
         # Ensure the current token is 'GO', then advance to 'SUB'
         if self.parser.current_token.token_type != TokenType.GO:
             raise SyntaxError("Expected 'GO' at the start of GOSUB statement")

@@ -3,7 +3,7 @@ from .base_statement_parser import BaseStatementParser
 
 class InputStatementParser(BaseStatementParser):
     def parse(self):
-        # set the position
+        # Advance past the 'INPUT' token
         self.parser.advance()
 
         # parse the variable
