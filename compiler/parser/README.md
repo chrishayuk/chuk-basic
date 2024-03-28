@@ -1,9 +1,10 @@
 TODO:
 
 - Complete README
+- Fix up handling of floats like 123.45 (make tests pass)
 - Refactor and Tidy Up
-- Finish up handling of all builtins
 - Extend some of the unit testing
 - Handle DIM
 - Handle DATA
 - Handle READ
+- RANDOMIZE
