@@ -2,7 +2,7 @@ from typing import List, Optional
 from ..lexer.token import Token
 from ..lexer.token_type import TokenType
 from ..ast.ast_node import Program, Variable
-from ..ast.ast_expression import Expression
+from ..ast.ast_expression import BinaryExpression, Expression
 from ..ast.ast_statement import Statement
 from .statements.end_statement import EndStatementParser
 from .statements.input_statement import InputStatementParser
@@ -107,7 +107,20 @@ class Parser:
         # Check if the current token is the FN keyword
         if self.current_token and self.current_token.token_type == TokenType.FN:
             # Parse an FN expression
-            return FnExpressionParser(self).parse()
+            fn_expression = FnExpressionParser(self).parse()
+
+            # Check if there is a binary operator after the function expression
+            while self.current_token and self.current_token.token_type in [
+                TokenType.PLUS, TokenType.MINUS, TokenType.MUL, TokenType.DIV, TokenType.POW,
+                TokenType.AND, TokenType.OR,
+                TokenType.EQ, TokenType.NE, TokenType.LT, TokenType.LE, TokenType.GT, TokenType.GE
+            ]:
+                operator = self.current_token
+                self.advance()
+                right_expression = PrimaryExpressionParser(self).parse()
+                fn_expression = BinaryExpression(operator, fn_expression, right_expression)
+
+            return fn_expression
 
         # Parse a primary expression
         left_expression = PrimaryExpressionParser(self).parse()

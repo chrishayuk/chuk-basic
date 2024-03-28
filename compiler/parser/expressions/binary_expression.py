@@ -1,4 +1,4 @@
-from ...ast.ast_expression import BinaryExpression, Expression
+from ...ast.ast_expression import BinaryExpression, Expression, FnExpression
 from ...lexer.token_type import TokenType
 from .base_expression import BaseExpressionParser
 from .primary_expression import PrimaryExpressionParser
@@ -7,24 +7,44 @@ class BinaryExpressionParser(BaseExpressionParser):
     def __init__(self, parser):
         super().__init__(parser)
     
-    def parse(self, left_expression, precedence=0):
+    def parse(self, left_expression=None, precedence=0):
+        if left_expression is None:
+            left_expression = self.parse_primary_expression()
+
         while self.parser.current_token and self.get_operator_precedence(self.parser.current_token.token_type) > precedence:
-            # get the operator token and skip past it
+            # Check if the left expression is a function expression followed by a binary operator
+            if isinstance(left_expression, FnExpression):
+                left_expression = self.parse_function_expression_with_binary_operator(left_expression, precedence)
+            else:
+                # get the operator token and skip past it
+                op_token = self.parser.current_token
+                self.parser.advance()
+
+                # parse the right expression
+                right_expression = self.parse_primary_expression()
+
+                # handle the precedence and get the right expression
+                while self.parser.current_token and self.get_operator_precedence(self.parser.current_token.token_type) > self.get_operator_precedence(op_token.token_type):
+                    right_expression = self.parse(right_expression, self.get_operator_precedence(op_token.token_type))
+
+                # parse the left expression
+                left_expression = BinaryExpression(left_expression, op_token, right_expression)
+
+        return left_expression
+
+    def parse_function_expression_with_binary_operator(self, function_expression, precedence):
+        while self.parser.current_token and self.get_operator_precedence(self.parser.current_token.token_type) > precedence:
             op_token = self.parser.current_token
             self.parser.advance()
-            
-            # parse the right expression
             right_expression = self.parse_primary_expression()
-            
-            # handle the precendence and get the right expression
+
             while self.parser.current_token and self.get_operator_precedence(self.parser.current_token.token_type) > self.get_operator_precedence(op_token.token_type):
                 right_expression = self.parse(right_expression, self.get_operator_precedence(op_token.token_type))
-            
-            # parse the left expression
-            left_expression = BinaryExpression(left_expression, op_token, right_expression)
-        
-        # return the left expression
-        return left_expression
+
+            new_left_expression = BinaryExpression(function_expression, op_token, right_expression)
+            function_expression = new_left_expression
+
+        return function_expression
 
     def get_operator_precedence(self, token_type: TokenType) -> int:
         # Precedence values for operators.

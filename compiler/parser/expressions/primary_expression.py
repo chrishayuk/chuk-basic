@@ -1,6 +1,7 @@
 from ...lexer.token_type import TokenType
 from ...ast.ast_node import Variable
 from ...ast.ast_expression import FnExpression, Literal
+from ...parser.expressions.builtin_functions import BUILTIN_FUNCTIONS, BuiltinFunctionParser
 from .base_expression import BaseExpressionParser
 
 class PrimaryExpressionParser(BaseExpressionParser):
@@ -15,6 +16,8 @@ class PrimaryExpressionParser(BaseExpressionParser):
         elif token.token_type == TokenType.STRING:
             self.parser.advance()
             return Literal(token.value)
+        elif token.value.upper() in BUILTIN_FUNCTIONS:
+            return BuiltinFunctionParser(self.parser).parse()
         elif token.token_type == TokenType.IDENTIFIER:
             self.parser.advance()
             return Variable(token.value)
