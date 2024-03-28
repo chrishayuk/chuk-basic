@@ -2,7 +2,7 @@ from typing import List, Optional
 from ..lexer.token import Token
 from ..lexer.token_type import TokenType
 from ..ast.ast_node import Program, Variable
-from ..ast.ast_expression import BinaryExpression, Expression
+from ..ast.ast_expression import BinaryExpression, Expression, FnExpression
 from ..ast.ast_statement import Statement
 from .statements.end_statement import EndStatementParser
 from .statements.input_statement import InputStatementParser
@@ -104,26 +104,13 @@ class Parser:
             # Parse a unary expression
             return UnaryExpressionParser(self).parse()
 
-        # Check if the current token is the FN keyword
-        if self.current_token and self.current_token.token_type == TokenType.FN:
-            # Parse an FN expression
-            fn_expression = FnExpressionParser(self).parse()
-
-            # Check if there is a binary operator after the function expression
-            while self.current_token and self.current_token.token_type in [
-                TokenType.PLUS, TokenType.MINUS, TokenType.MUL, TokenType.DIV, TokenType.POW,
-                TokenType.AND, TokenType.OR,
-                TokenType.EQ, TokenType.NE, TokenType.LT, TokenType.LE, TokenType.GT, TokenType.GE
-            ]:
-                operator = self.current_token
-                self.advance()
-                right_expression = PrimaryExpressionParser(self).parse()
-                fn_expression = BinaryExpression(operator, fn_expression, right_expression)
-
-            return fn_expression
-
         # Parse a primary expression
         left_expression = PrimaryExpressionParser(self).parse()
+
+        # Check if the left expression is a function expression
+        if isinstance(left_expression, FnExpression):
+            # Handle the case where a function expression is followed by a binary operator
+            return self.parse_function_expression_with_binary_operator(left_expression)
 
         # Check if the current token is a binary operator
         while self.current_token and self.current_token.token_type in [
@@ -135,6 +122,19 @@ class Parser:
             left_expression = BinaryExpressionParser(self).parse(left_expression)
 
         return left_expression
+
+    def parse_function_expression_with_binary_operator(self, function_expression):
+        while self.current_token and self.current_token.token_type in [
+            TokenType.PLUS, TokenType.MINUS, TokenType.MUL, TokenType.DIV, TokenType.POW,
+            TokenType.AND, TokenType.OR,
+            TokenType.EQ, TokenType.NE, TokenType.LT, TokenType.LE, TokenType.GT, TokenType.GE
+        ]:
+            operator = self.current_token
+            self.advance()
+            right_expression = PrimaryExpressionParser(self).parse()
+            function_expression = BinaryExpression(function_expression, operator, right_expression)
+
+        return function_expression
 
     def parse_statement(self) -> Optional[Statement]:
         """Parse a single statement from the current token."""
