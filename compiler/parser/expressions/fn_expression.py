@@ -45,4 +45,3 @@ class FnExpressionParser(BaseExpressionParser):
 
         # Return the function expression
         return FnExpression(function_name, arguments)
-        
