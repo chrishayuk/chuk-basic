@@ -16,6 +16,7 @@ from .statements.for_statement import ForStatementParser
 from .statements.gosub_statement import GoSubStatementParser
 from .statements.goto_statement import GoToStatementParser
 from .statements.on_statement import OnStatementParser
+from .statements.def_statement import DefStatementParser
 from .expressions.binary_expression import BinaryExpressionParser
 from .expressions.primary_expression import PrimaryExpressionParser
 from .expressions.unary_expression import UnaryExpressionParser
@@ -54,10 +55,12 @@ class Parser:
             if self.current_token.token_type == TokenType.NUMBER:
                 # peek the next token
                 next_token = self.peek_next_token()
+                print(f"Next token: {next_token}")  # Debug print
 
                 # if next token is a statement, skip on
                 if next_token and next_token.token_type in [TokenType.DEF, TokenType.LET, TokenType.IF, TokenType.PRINT, ...]:
                     self.advance()
+                    print(f"Advanced to token: {self.current_token}")  # Debug print
 
             # parse the statement
             statement = self.parse_statement()
@@ -79,17 +82,19 @@ class Parser:
     def parse_variable(self) -> Variable:
         """Parse a variable from the current token."""
         if self.current_token.token_type == TokenType.IDENTIFIER:
-            # get the variable name
             var_name = self.current_token.value
-
-            # skip past the variable name
             self.advance()
-
-            # return a variable
             return Variable(var_name)
+        elif self.current_token.token_type == TokenType.FN:
+            self.advance()
+            if self.current_token.token_type == TokenType.IDENTIFIER:
+                var_name = f"FN{self.current_token.value}"
+                self.advance()
+                return Variable(var_name)
+            else:
+                raise SyntaxError(f"Expected function name after 'FN', but got {self.current_token.token_type}")
+        raise SyntaxError(f"Expected variable or function name, but got {self.current_token.token_type}")
         
-        # error
-        raise SyntaxError(f"Expected variable, but got {self.current_token.token_type}")
     
     def parse_expression(self) -> Expression:
         """Parse an expression from the current token."""
@@ -147,6 +152,8 @@ class Parser:
             TokenType.IF: IfStatementParser,
             TokenType.FOR: ForStatementParser,
             TokenType.ON: OnStatementParser,
+            # functions
+            TokenType.DEF: DefStatementParser,
         }
         parser_class = statement_parsers.get(token_type)
         if parser_class:
