@@ -74,3 +74,266 @@ def test_parse_builtin_abs_function():
     assert len(fn_expression.arguments) == 1
     assert isinstance(fn_expression.arguments[0], Literal)
     assert fn_expression.arguments[0].value == -10
+
+def test_parse_builtin_log_function():
+    input_string = "50 PRINT LOG(10)"
+    tokenizer = Tokenizer(input_string)
+    tokens = tokenizer.tokenize()
+    parser = Parser(tokens)
+    program = parser.parse()
+
+    assert len(program.statements) == 1
+    print_statement = program.statements[0]
+    assert isinstance(print_statement, PrintStatement)
+    fn_expression = print_statement.expression
+    assert isinstance(fn_expression, FnExpression)
+    assert fn_expression.name.name == "LOG"
+    assert len(fn_expression.arguments) == 1
+    assert isinstance(fn_expression.arguments[0], Literal)
+    assert fn_expression.arguments[0].value == 10
+
+def test_parse_builtin_exp_function():
+    input_string = "60 PRINT EXP(2)"
+    tokenizer = Tokenizer(input_string)
+    tokens = tokenizer.tokenize()
+    parser = Parser(tokens)
+    program = parser.parse()
+
+    assert len(program.statements) == 1
+    print_statement = program.statements[0]
+    assert isinstance(print_statement, PrintStatement)
+    fn_expression = print_statement.expression
+    assert isinstance(fn_expression, FnExpression)
+    assert fn_expression.name.name == "EXP"
+    assert len(fn_expression.arguments) == 1
+    assert isinstance(fn_expression.arguments[0], Literal)
+    assert fn_expression.arguments[0].value == 2
+
+def test_parse_builtin_sqr_function():
+    input_string = "70 PRINT SQR(25)"
+    tokenizer = Tokenizer(input_string)
+    tokens = tokenizer.tokenize()
+    parser = Parser(tokens)
+    program = parser.parse()
+
+    assert len(program.statements) == 1
+    print_statement = program.statements[0]
+    assert isinstance(print_statement, PrintStatement)
+    fn_expression = print_statement.expression
+    assert isinstance(fn_expression, FnExpression)
+    assert fn_expression.name.name == "SQR"
+    assert len(fn_expression.arguments) == 1
+    assert isinstance(fn_expression.arguments[0], Literal)
+    assert fn_expression.arguments[0].value == 25
+
+def test_parse_builtin_int_function():
+    input_string = "80 PRINT INT(3.14)"
+    tokenizer = Tokenizer(input_string)
+    tokens = tokenizer.tokenize()
+    parser = Parser(tokens)
+    program = parser.parse()
+
+    assert len(program.statements) == 1
+    print_statement = program.statements[0]
+    assert isinstance(print_statement, PrintStatement)
+    fn_expression = print_statement.expression
+    assert isinstance(fn_expression, FnExpression)
+    assert fn_expression.name.name == "INT"
+    assert len(fn_expression.arguments) == 1
+    assert isinstance(fn_expression.arguments[0], Literal)
+    assert fn_expression.arguments[0].value == 3.14
+
+def test_parse_builtin_rnd_function():
+    input_string = "90 PRINT RND(1)"
+    tokenizer = Tokenizer(input_string)
+    tokens = tokenizer.tokenize()
+    parser = Parser(tokens)
+    program = parser.parse()
+
+    assert len(program.statements) == 1
+    print_statement = program.statements[0]
+    assert isinstance(print_statement, PrintStatement)
+    fn_expression = print_statement.expression
+    assert isinstance(fn_expression, FnExpression)
+    assert fn_expression.name.name == "RND"
+    assert len(fn_expression.arguments) == 1
+    assert isinstance(fn_expression.arguments[0], Literal)
+    assert fn_expression.arguments[0].value == 1
+
+def test_parse_builtin_atn_function():
+    input_string = "100 PRINT ATN(45)"
+    tokenizer = Tokenizer(input_string)
+    tokens = tokenizer.tokenize()
+    parser = Parser(tokens)
+    program = parser.parse()
+
+    assert len(program.statements) == 1
+    print_statement = program.statements[0]
+    assert isinstance(print_statement, PrintStatement)
+    fn_expression = print_statement.expression
+    assert isinstance(fn_expression, FnExpression)
+    assert fn_expression.name.name == "ATN"
+    assert len(fn_expression.arguments) == 1
+    assert isinstance(fn_expression.arguments[0], Literal)
+    assert fn_expression.arguments[0].value == 45
+
+def test_parse_builtin_chr_dollar_function():
+    input_string = "110 PRINT CHR$(65)"
+    tokenizer = Tokenizer(input_string)
+    tokens = tokenizer.tokenize()
+    parser = Parser(tokens)
+    program = parser.parse()
+
+    assert len(program.statements) == 1
+    print_statement = program.statements[0]
+    assert isinstance(print_statement, PrintStatement)
+    fn_expression = print_statement.expression
+    assert isinstance(fn_expression, FnExpression)
+    assert fn_expression.name.name == "CHR$"
+    assert len(fn_expression.arguments) == 1
+    assert isinstance(fn_expression.arguments[0], Literal)
+    assert fn_expression.arguments[0].value == 65
+
+def test_parse_builtin_left_dollar_function():
+    input_string = "120 PRINT LEFT$(\"HELLO\", 2)"
+    tokenizer = Tokenizer(input_string)
+    tokens = tokenizer.tokenize()
+    parser = Parser(tokens)
+    program = parser.parse()
+
+    assert len(program.statements) == 1
+    print_statement = program.statements[0]
+    assert isinstance(print_statement, PrintStatement)
+    fn_expression = print_statement.expression
+    assert isinstance(fn_expression, FnExpression)
+    assert fn_expression.name.name == "LEFT$"
+    assert len(fn_expression.arguments) == 2
+    assert isinstance(fn_expression.arguments[0], Literal)
+    assert fn_expression.arguments[0].value == "HELLO"
+    assert isinstance(fn_expression.arguments[1], Literal)
+    assert fn_expression.arguments[1].value == 2
+
+def test_parse_builtin_right_dollar_function():
+    input_string = "130 PRINT RIGHT$(\"HELLO\", 2)"
+    tokenizer = Tokenizer(input_string)
+    tokens = tokenizer.tokenize()
+    parser = Parser(tokens)
+    program = parser.parse()
+
+    assert len(program.statements) == 1
+    print_statement = program.statements[0]
+    assert isinstance(print_statement, PrintStatement)
+    fn_expression = print_statement.expression
+    assert isinstance(fn_expression, FnExpression)
+    assert fn_expression.name.name == "RIGHT$"
+    assert len(fn_expression.arguments) == 2
+    assert isinstance(fn_expression.arguments[0], Literal)
+    assert fn_expression.arguments[0].value == "HELLO"
+    assert isinstance(fn_expression.arguments[1], Literal)
+    assert fn_expression.arguments[1].value == 2
+
+def test_parse_builtin_mid_dollar_function():
+    input_string = "140 PRINT MID$(\"HELLO\", 2, 3)"
+    tokenizer = Tokenizer(input_string)
+    tokens = tokenizer.tokenize()
+    parser = Parser(tokens)
+    program = parser.parse()
+
+    assert len(program.statements) == 1
+    print_statement = program.statements[0]
+    assert isinstance(print_statement, PrintStatement)
+    fn_expression = print_statement.expression
+    assert isinstance(fn_expression, FnExpression)
+    assert fn_expression.name.name == "MID$"
+    assert len(fn_expression.arguments) == 3
+    assert isinstance(fn_expression.arguments[0], Literal)
+    assert fn_expression.arguments[0].value == "HELLO"
+    assert isinstance(fn_expression.arguments[1], Literal)
+    assert fn_expression.arguments[1].value == 2
+    assert isinstance(fn_expression.arguments[2], Literal)
+    assert fn_expression.arguments[2].value == 3
+
+def test_parse_builtin_sgn_function():
+    input_string = "150 PRINT SGN(-5)"
+    tokenizer = Tokenizer(input_string)
+    tokens = tokenizer.tokenize()
+    parser = Parser(tokens)
+    program = parser.parse()
+
+    assert len(program.statements) == 1
+    print_statement = program.statements[0]
+    assert isinstance(print_statement, PrintStatement)
+    fn_expression = print_statement.expression
+    assert isinstance(fn_expression, FnExpression)
+    assert fn_expression.name.name == "SGN"
+    assert len(fn_expression.arguments) == 1
+    assert isinstance(fn_expression.arguments[0], Literal)
+    assert fn_expression.arguments[0].value == -5
+
+def test_parse_builtin_str_dollar_function():
+    input_string = "160 PRINT STR$(123.45)"
+    tokenizer = Tokenizer(input_string)
+    tokens = tokenizer.tokenize()
+    parser = Parser(tokens)
+    program = parser.parse()
+
+    assert len(program.statements) == 1
+    print_statement = program.statements[0]
+    assert isinstance(print_statement, PrintStatement)
+    fn_expression = print_statement.expression
+    assert isinstance(fn_expression, FnExpression)
+    assert fn_expression.name.name == "STR$"
+    assert len(fn_expression.arguments) == 1
+    assert isinstance(fn_expression.arguments[0], Literal)
+    assert fn_expression.arguments[0].value == 123.45
+
+def test_parse_builtin_val_function():
+    input_string = "170 PRINT VAL(\"123.45\")"
+    tokenizer = Tokenizer(input_string)
+    tokens = tokenizer.tokenize()
+    parser = Parser(tokens)
+    program = parser.parse()
+
+    assert len(program.statements) == 1
+    print_statement = program.statements[0]
+    assert isinstance(print_statement, PrintStatement)
+    fn_expression = print_statement.expression
+    assert isinstance(fn_expression, FnExpression)
+    assert fn_expression.name.name == "VAL"
+    assert len(fn_expression.arguments) == 1
+    assert isinstance(fn_expression.arguments[0], Literal)
+    assert fn_expression.arguments[0].value == "123.45"
+
+def test_parse_builtin_spc_function():
+    input_string = "180 PRINT SPC(5)"
+    tokenizer = Tokenizer(input_string)
+    tokens = tokenizer.tokenize()
+    parser = Parser(tokens)
+    program = parser.parse()
+
+    assert len(program.statements) == 1
+    print_statement = program.statements[0]
+    assert isinstance(print_statement, PrintStatement)
+    fn_expression = print_statement.expression
+    assert isinstance(fn_expression, FnExpression)
+    assert fn_expression.name.name == "SPC"
+    assert len(fn_expression.arguments) == 1
+    assert isinstance(fn_expression.arguments[0], Literal)
+    assert fn_expression.arguments[0].value == 5
+
+def test_parse_builtin_tab_function():
+    input_string = "190 PRINT TAB(10)"
+    tokenizer = Tokenizer(input_string)
+    tokens = tokenizer.tokenize()
+    parser = Parser(tokens)
+    program = parser.parse()
+
+    assert len(program.statements) == 1
+    print_statement = program.statements[0]
+    assert isinstance(print_statement, PrintStatement)
+    fn_expression = print_statement.expression
+    assert isinstance(fn_expression, FnExpression)
+    assert fn_expression.name.name == "TAB"
+    assert len(fn_expression.arguments) == 1
+    assert isinstance(fn_expression.arguments[0], Literal)
+    assert fn_expression.arguments[0].value == 10

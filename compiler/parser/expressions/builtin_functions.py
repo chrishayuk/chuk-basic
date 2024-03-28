@@ -1,11 +1,16 @@
-from ...ast.ast_node import Variable
-from ...ast.ast_expression import FnExpression
 from ...lexer.token_type import TokenType
-from .base_expression import BaseExpressionParser
+from ...ast.ast_node import Variable
+from ...ast.ast_expression import FnExpression, Literal
 
-BUILTIN_FUNCTIONS = ["SIN", "COS", "TAN", "ABS", "LOG", "EXP", "SQR", "INT", "RND"]
+BUILTIN_FUNCTIONS = {
+    "SIN", "COS", "ATN", "INT", "TAN", "EXP", "ABS", "LOG", "SQR", "RND",
+    "CHR$", "LEFT$", "RIGHT$", "MID$", "SGN", "STR$", "VAL", "SPC", "TAB"
+}
 
-class BuiltinFunctionParser(BaseExpressionParser):
+class BuiltinFunctionParser:
+    def __init__(self, parser):
+        self.parser = parser
+
     def parse(self):
         function_name = self.parser.current_token.value.upper()
         if function_name not in BUILTIN_FUNCTIONS:
@@ -20,18 +25,23 @@ class BuiltinFunctionParser(BaseExpressionParser):
 
         arguments = []
         # Parse arguments
-        while self.parser.current_token.token_type != TokenType.RPAREN:
+        while self.parser.current_token and self.parser.current_token.token_type != TokenType.RPAREN:
             expression = self.parser.parse_expression()
+            if isinstance(expression, Literal):
+                value = expression.value
+                if isinstance(value, int):
+                    expression = Literal(float(value))
             arguments.append(expression)
 
-            # Check for comma separator or closing parenthesis
-            if self.parser.current_token.token_type == TokenType.COMMA:
+            # Check for comma separator
+            if self.parser.current_token and self.parser.current_token.token_type == TokenType.COMMA:
                 self.parser.advance()
-            elif self.parser.current_token.token_type != TokenType.RPAREN:
-                raise SyntaxError("Expected ',' or ')' in argument list of built-in function")
 
-        # Advance past the closing parenthesis
-        self.parser.advance()
+        # Consume the closing parenthesis
+        if self.parser.current_token and self.parser.current_token.token_type == TokenType.RPAREN:
+            self.parser.advance()
+        else:
+            raise SyntaxError("Expected ')' in argument list of built-in function")
 
-        # Return the built-in function as a FnExpression
+        # Return the built-in function expression
         return FnExpression(Variable(function_name), arguments)

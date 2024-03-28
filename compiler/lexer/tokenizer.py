@@ -100,10 +100,9 @@ class Tokenizer:
                 return Token(token_type, punctuation)
             
         # number
-        number_match = re.match(r'\d+', self.input_string[self.current_pos:])
-        if number_match:
-            self.current_pos += len(number_match.group(0))
-            return Token(TokenType.NUMBER, int(number_match.group(0)))
+        token = self.tokenize_number()
+        if token:
+            return token
         
         # Check for FN keyword before identifier
         if self.input_string[self.current_pos:].startswith("FN"):
@@ -118,7 +117,39 @@ class Tokenizer:
             return Token(TokenType.IDENTIFIER, identifier)
 
         return None
+    
+    def tokenize_number(self):
+        start_pos = self.current_pos
+        is_float = False
+        has_decimal = False
 
+        while self.current_pos < len(self.input_string):
+            char = self.input_string[self.current_pos]
+
+            if char.isdigit():
+                self.current_pos += 1
+            elif char == '.' and not has_decimal:
+                has_decimal = True
+                is_float = True
+                self.current_pos += 1
+            else:
+                break
+
+        number_str = self.input_string[start_pos:self.current_pos]
+
+        if is_float:
+            try:
+                value = float(number_str)
+                return Token(TokenType.NUMBER, value)
+            except ValueError:
+                raise TokenizationError(f"Invalid float literal: {number_str}")
+        else:
+            number_match = re.match(r'\d+', number_str)
+            if number_match:
+                return Token(TokenType.NUMBER, int(number_match.group(0)))
+            else:
+                return None
+             
     def skip_whitespace(self):
         # loops from current position until either we hit the end of the string, or until we hit a space
         while self.current_pos < len(self.input_string) and (self.input_string[self.current_pos].isspace() or self.input_string[self.current_pos] == '\n'):

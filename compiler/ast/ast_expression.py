@@ -21,6 +21,9 @@ class Literal(Expression):
     def __init__(self, value):
         self.value = value
 
+    def __str__(self):
+        return str(self.value)
+
 class FnExpression(Expression):
     def __init__(self, name: Variable, arguments: List[Expression]):
         self.name = name
