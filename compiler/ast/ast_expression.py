@@ -1,3 +1,4 @@
+import decimal
 from typing import List
 from .ast_node import ASTNode
 from .ast_node import Variable
@@ -19,7 +20,10 @@ class UnaryExpression(Expression):
 
 class Literal(Expression):
     def __init__(self, value):
-        self.value = value
+        try:
+            self.value = decimal.Decimal(value)
+        except (ValueError, decimal.InvalidOperation):
+            self.value = value
 
     def __str__(self):
         return str(self.value)

@@ -11,7 +11,7 @@ class PrimaryExpressionParser(BaseExpressionParser):
 
         if token.token_type == TokenType.NUMBER:
             self.parser.advance()
-            return Literal(int(token.value))
+            return Literal(token.value)
         elif token.token_type == TokenType.STRING:
             self.parser.advance()
             return Literal(token.value)

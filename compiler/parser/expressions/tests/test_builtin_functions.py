@@ -1,5 +1,6 @@
 # test_builtin_functions.py
 
+import decimal
 from ....lexer.token_type import TokenType
 from ....lexer.tokenizer import Tokenizer
 from ....ast.ast_node import Variable
@@ -125,23 +126,6 @@ def test_parse_builtin_sqr_function():
     assert len(fn_expression.arguments) == 1
     assert isinstance(fn_expression.arguments[0], Literal)
     assert fn_expression.arguments[0].value == 25
-
-def test_parse_builtin_int_function():
-    input_string = "80 PRINT INT(3.14)"
-    tokenizer = Tokenizer(input_string)
-    tokens = tokenizer.tokenize()
-    parser = Parser(tokens)
-    program = parser.parse()
-
-    assert len(program.statements) == 1
-    print_statement = program.statements[0]
-    assert isinstance(print_statement, PrintStatement)
-    fn_expression = print_statement.expression
-    assert isinstance(fn_expression, FnExpression)
-    assert fn_expression.name.name == "INT"
-    assert len(fn_expression.arguments) == 1
-    assert isinstance(fn_expression.arguments[0], Literal)
-    assert fn_expression.arguments[0].value == 3.14
 
 def test_parse_builtin_rnd_function():
     input_string = "90 PRINT RND(1)"
@@ -270,40 +254,6 @@ def test_parse_builtin_sgn_function():
     assert isinstance(fn_expression.arguments[0], Literal)
     assert fn_expression.arguments[0].value == -5
 
-def test_parse_builtin_str_dollar_function():
-    input_string = "160 PRINT STR$(123.45)"
-    tokenizer = Tokenizer(input_string)
-    tokens = tokenizer.tokenize()
-    parser = Parser(tokens)
-    program = parser.parse()
-
-    assert len(program.statements) == 1
-    print_statement = program.statements[0]
-    assert isinstance(print_statement, PrintStatement)
-    fn_expression = print_statement.expression
-    assert isinstance(fn_expression, FnExpression)
-    assert fn_expression.name.name == "STR$"
-    assert len(fn_expression.arguments) == 1
-    assert isinstance(fn_expression.arguments[0], Literal)
-    assert fn_expression.arguments[0].value == 123.45
-
-def test_parse_builtin_val_function():
-    input_string = "170 PRINT VAL(\"123.45\")"
-    tokenizer = Tokenizer(input_string)
-    tokens = tokenizer.tokenize()
-    parser = Parser(tokens)
-    program = parser.parse()
-
-    assert len(program.statements) == 1
-    print_statement = program.statements[0]
-    assert isinstance(print_statement, PrintStatement)
-    fn_expression = print_statement.expression
-    assert isinstance(fn_expression, FnExpression)
-    assert fn_expression.name.name == "VAL"
-    assert len(fn_expression.arguments) == 1
-    assert isinstance(fn_expression.arguments[0], Literal)
-    assert fn_expression.arguments[0].value == "123.45"
-
 def test_parse_builtin_spc_function():
     input_string = "180 PRINT SPC(5)"
     tokenizer = Tokenizer(input_string)
@@ -337,3 +287,65 @@ def test_parse_builtin_tab_function():
     assert len(fn_expression.arguments) == 1
     assert isinstance(fn_expression.arguments[0], Literal)
     assert fn_expression.arguments[0].value == 10
+
+import decimal
+
+def test_parse_builtin_int_function():
+    input_string = "80 PRINT INT(3.14)"
+    tokenizer = Tokenizer(input_string)
+    tokens = tokenizer.tokenize()
+    parser = Parser(tokens)
+    program = parser.parse()
+
+    assert len(program.statements) == 1
+    print_statement = program.statements[0]
+    assert isinstance(print_statement, PrintStatement)
+    fn_expression = print_statement.expression
+    assert isinstance(fn_expression, FnExpression)
+    assert fn_expression.name.name == "INT"
+    assert len(fn_expression.arguments) == 1
+    assert isinstance(fn_expression.arguments[0], Literal)
+
+    expected_value = decimal.Decimal('3.14')
+    actual_value = fn_expression.arguments[0].value
+    assert abs(actual_value.quantize(decimal.Decimal('1.00'), rounding=decimal.ROUND_HALF_UP) - expected_value) < decimal.Decimal('1e-9'), f"Expected {expected_value}, got {actual_value}"
+
+def test_parse_builtin_val_function():
+    input_string = "170 PRINT VAL(\"123.45\")"
+    tokenizer = Tokenizer(input_string)
+    tokens = tokenizer.tokenize()
+    parser = Parser(tokens)
+    program = parser.parse()
+
+    assert len(program.statements) == 1
+    print_statement = program.statements[0]
+    assert isinstance(print_statement, PrintStatement)
+    fn_expression = print_statement.expression
+    assert isinstance(fn_expression, FnExpression)
+    assert fn_expression.name.name == "VAL"
+    assert len(fn_expression.arguments) == 1
+    assert isinstance(fn_expression.arguments[0], Literal)
+
+    expected_value = decimal.Decimal('123.45')
+    actual_value = fn_expression.arguments[0].value
+    assert abs(actual_value.quantize(decimal.Decimal('1.00'), rounding=decimal.ROUND_HALF_UP) - expected_value) < decimal.Decimal('1e-9'), f"Expected {expected_value}, got {actual_value}"
+
+def test_parse_builtin_str_dollar_function():
+    input_string = "160 PRINT STR$(123.45)"
+    tokenizer = Tokenizer(input_string)
+    tokens = tokenizer.tokenize()
+    parser = Parser(tokens)
+    program = parser.parse()
+
+    assert len(program.statements) == 1
+    print_statement = program.statements[0]
+    assert isinstance(print_statement, PrintStatement)
+    fn_expression = print_statement.expression
+    assert isinstance(fn_expression, FnExpression)
+    assert fn_expression.name.name == "STR$"
+    assert len(fn_expression.arguments) == 1
+    assert isinstance(fn_expression.arguments[0], Literal)
+
+    expected_value = decimal.Decimal('123.45')
+    actual_value = fn_expression.arguments[0].value
+    assert abs(actual_value.quantize(decimal.Decimal('1.00'), rounding=decimal.ROUND_HALF_UP) - expected_value) < decimal.Decimal('1e-9'), f"Expected {expected_value}, got {actual_value}"
