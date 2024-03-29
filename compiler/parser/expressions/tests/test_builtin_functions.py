@@ -346,3 +346,16 @@ def test_parse_builtin_str_dollar_function():
     expected_value = decimal.Decimal('123.45')
     actual_value = fn_expression.arguments[0].value
     assert abs(actual_value.quantize(decimal.Decimal('1.00'), rounding=decimal.ROUND_HALF_UP) - expected_value) < decimal.Decimal('1e-9'), f"Expected {expected_value}, got {actual_value}"
+
+def test_parse_randomize_function():
+    input_string = "RANDOMIZE(42)"
+    tokenizer = Tokenizer(input_string)
+    tokens = tokenizer.tokenize()
+    parser = Parser(tokens)
+    expression = parser.parse_expression()
+
+    assert isinstance(expression, FnExpression)
+    assert expression.name.name == "RANDOMIZE"
+    assert len(expression.arguments) == 1
+    assert isinstance(expression.arguments[0], Literal)
+    assert expression.arguments[0].value == 42

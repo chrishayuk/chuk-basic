@@ -1,3 +1,4 @@
+from compiler.ast.statements.read_statement import ReadStatement
 from ....lexer.token_type import TokenType
 from ....lexer.tokenizer import Tokenizer
 from ....ast.variable import Variable
@@ -65,3 +66,63 @@ def test_parse_dim_statement_with_expressions():
     assert statement.dimensions[1].left.value == 2
     assert isinstance(statement.dimensions[1].right, Variable)
     assert statement.dimensions[1].right.name == "m"
+
+def test_parse_read_statement_single_variable():
+    input_string = "READ x"
+    tokenizer = Tokenizer(input_string)
+    tokens = tokenizer.tokenize()
+    parser = Parser(tokens)
+    program = parser.parse()
+
+    assert len(program.statements) == 1
+    statement = program.statements[0]
+    assert isinstance(statement, ReadStatement)
+    assert len(statement.variables) == 1
+    assert isinstance(statement.variables[0], Variable)
+    assert statement.variables[0].name == "x"
+
+def test_parse_read_statement_multiple_variables():
+    input_string = "READ x, y, z"
+    tokenizer = Tokenizer(input_string)
+    tokens = tokenizer.tokenize()
+    parser = Parser(tokens)
+    program = parser.parse()
+
+    assert len(program.statements) == 1
+    statement = program.statements[0]
+    assert isinstance(statement, ReadStatement)
+    assert len(statement.variables) == 3
+    assert isinstance(statement.variables[0], Variable)
+    assert statement.variables[0].name == "x"
+    assert isinstance(statement.variables[1], Variable)
+    assert statement.variables[1].name == "y"
+    assert isinstance(statement.variables[2], Variable)
+    assert statement.variables[2].name == "z"
+
+def test_parse_read_statement_with_array_variable():
+    input_string = "READ array(1)"
+    tokenizer = Tokenizer(input_string)
+    tokens = tokenizer.tokenize()
+    parser = Parser(tokens)
+    program = parser.parse()
+
+    assert len(program.statements) == 1
+    statement = program.statements[0]
+    assert isinstance(statement, ReadStatement)
+    assert len(statement.variables) == 1
+    assert isinstance(statement.variables[0], Variable)
+    assert statement.variables[0].name == "array(1)"
+
+def test_parse_read_statement_with_function_array_variable():
+    input_string = "READ FNarray(x + 1)"
+    tokenizer = Tokenizer(input_string)
+    tokens = tokenizer.tokenize()
+    parser = Parser(tokens)
+    program = parser.parse()
+
+    assert len(program.statements) == 1
+    statement = program.statements[0]
+    assert isinstance(statement, ReadStatement)
+    assert len(statement.variables) == 1
+    assert isinstance(statement.variables[0], Variable)
+    assert statement.variables[0].name == "FNarray(x + 1)"

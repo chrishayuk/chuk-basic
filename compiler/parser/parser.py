@@ -1,5 +1,4 @@
 from typing import List, Optional
-
 from ..lexer.token import Token
 from ..lexer.token_type import TokenType
 from ..ast.program import Program
@@ -20,6 +19,7 @@ from .statements.goto_statement import GoToStatementParser
 from .statements.on_statement import OnStatementParser
 from .statements.def_statement import DefStatementParser
 from .statements.dim_statement import DimStatementParser
+from .statements.read_statement import ReadStatementParser
 from .expressions.binary_expression import BinaryExpressionParser
 from .expressions.primary_expression import PrimaryExpressionParser
 from .expressions.unary_expression import UnaryExpressionParser 
@@ -171,6 +171,7 @@ class Parser:
             TokenType.DEF: DefStatementParser,
             # others
             TokenType.DIM: DimStatementParser,
+            TokenType.READ: ReadStatementParser,
         }
         parser_class = statement_parsers.get(token_type)
         if parser_class:

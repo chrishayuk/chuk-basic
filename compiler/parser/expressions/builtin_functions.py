@@ -4,7 +4,8 @@ from ...ast.expressions import FnExpression, Literal
 
 BUILTIN_FUNCTIONS = {
     "SIN", "COS", "ATN", "INT", "TAN", "EXP", "ABS", "LOG", "SQR", "RND",
-    "CHR$", "LEFT$", "RIGHT$", "MID$", "SGN", "STR$", "VAL", "SPC", "TAB"
+    "CHR$", "LEFT$", "RIGHT$", "MID$", "SGN", "STR$", "VAL", "SPC", "TAB",
+    "RANDOMIZE"
 }
 
 class BuiltinFunctionParser:
