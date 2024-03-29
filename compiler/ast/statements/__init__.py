@@ -12,3 +12,4 @@ from .rem_statement import *
 from .return_statement import *
 from .stop_statement import *
 from .let_statement import *
+from .dim_statement import *
