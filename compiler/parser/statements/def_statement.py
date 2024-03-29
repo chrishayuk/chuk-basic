@@ -1,8 +1,8 @@
 from compiler.parser.statements.if_statement import IfStatementParser
 from compiler.parser.statements.let_statement import LetStatementParser
 from ...lexer.token_type import TokenType
-from ...ast.ast_node import Variable
-from ...ast.ast_function import DefStatement
+from ...ast.variable import Variable
+from ...ast.functions import DefStatement
 from .base_statement_parser import BaseStatementParser
 
 class DefStatementParser(BaseStatementParser):

@@ -1,5 +1,5 @@
 from ...lexer.token_type import TokenType
-from ...ast.ast_expression import UnaryExpression, Literal
+from ...ast.expressions import UnaryExpression, Literal
 from .base_expression import BaseExpressionParser
 from .primary_expression import PrimaryExpressionParser
 

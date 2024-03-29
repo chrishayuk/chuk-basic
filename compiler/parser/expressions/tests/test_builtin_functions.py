@@ -1,11 +1,8 @@
 # test_builtin_functions.py
-
 import decimal
-from ....lexer.token_type import TokenType
 from ....lexer.tokenizer import Tokenizer
-from ....ast.ast_node import Variable
-from ....ast.ast_statement import PrintStatement
-from ....ast.ast_expression import FnExpression, Literal
+from ....ast.statements import PrintStatement
+from ....ast.expressions import FnExpression, Literal
 from ...parser import Parser
 
 def test_parse_builtin_sin_function():

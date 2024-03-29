@@ -1,6 +1,6 @@
 from ...lexer.token_type import TokenType
-from ...ast.ast_node import Variable
-from ...ast.ast_control_flow import ForStatement, NextStatement
+from ...ast.variable import Variable
+from ...ast.statements import ForStatement, NextStatement
 from .base_statement_parser import BaseStatementParser
 
 class ForStatementParser(BaseStatementParser):

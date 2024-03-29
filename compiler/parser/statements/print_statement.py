@@ -1,4 +1,4 @@
-from ...ast.ast_statement import PrintStatement
+from ...ast.statements import PrintStatement
 from .base_statement_parser import BaseStatementParser
 
 class PrintStatementParser(BaseStatementParser):

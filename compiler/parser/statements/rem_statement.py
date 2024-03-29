@@ -1,4 +1,4 @@
-from ...ast.ast_statement import RemStatement
+from ...ast.statements import RemStatement
 from .base_statement_parser import BaseStatementParser
 
 

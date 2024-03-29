@@ -1,9 +1,10 @@
 from typing import List, Optional
 from ..lexer.token import Token
 from ..lexer.token_type import TokenType
-from ..ast.ast_node import Program, Variable
-from ..ast.ast_expression import BinaryExpression, Expression, FnExpression
-from ..ast.ast_statement import Statement
+from ..ast.program import Program
+from ..ast.variable import Variable
+from ..ast.expressions import BinaryExpression, Expression, FnExpression
+from ..ast.statements import Statement
 from .statements.end_statement import EndStatementParser
 from .statements.input_statement import InputStatementParser
 from .statements.let_statement import LetStatementParser
@@ -19,8 +20,7 @@ from .statements.on_statement import OnStatementParser
 from .statements.def_statement import DefStatementParser
 from .expressions.binary_expression import BinaryExpressionParser
 from .expressions.primary_expression import PrimaryExpressionParser
-from .expressions.unary_expression import UnaryExpressionParser
-from .expressions.fn_expression import FnExpressionParser
+from .expressions.unary_expression import UnaryExpressionParser 
 
 
 class Parser:

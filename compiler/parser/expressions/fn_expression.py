@@ -1,12 +1,6 @@
 from ...lexer.token_type import TokenType
-from ...ast.ast_node import Variable
-from ...ast.ast_expression import FnExpression, BinaryExpression
-from .base_expression import BaseExpressionParser
-from .builtin_functions import BuiltinFunctionParser, BUILTIN_FUNCTIONS
-
-from ...ast.ast_node import Variable
-from ...ast.ast_expression import FnExpression
-from ...lexer.token_type import TokenType
+from ...ast.variable import Variable
+from ...ast.expressions import FnExpression
 from .base_expression import BaseExpressionParser
 
 class FnExpressionParser(BaseExpressionParser):

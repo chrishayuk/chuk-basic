@@ -1,6 +1,6 @@
 from ...lexer.token_type import TokenType
-from ...ast.ast_node import Variable
-from ...ast.ast_expression import FnExpression, Literal
+from ...ast.variable import Variable
+from ...ast.expressions import FnExpression, Literal
 
 BUILTIN_FUNCTIONS = {
     "SIN", "COS", "ATN", "INT", "TAN", "EXP", "ABS", "LOG", "SQR", "RND",

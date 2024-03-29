@@ -1,11 +1,8 @@
 import pytest
-
 from ....lexer.tokenizer import Tokenizer
-from ....ast.ast_node import Variable
-from ....ast.ast_expression import BinaryExpression, FnExpression, Literal
-from ....ast.ast_statement import LetStatement
-from ....ast.ast_control_flow import GotoStatement, IfStatement
-from ....ast.ast_function import DefStatement, FnEndStatement
+from ....ast.variable import Variable
+from ....ast.expressions import BinaryExpression
+from ....ast.functions import DefStatement
 from ...parser import Parser
 from ...statements.def_statement import DefStatementParser
 

@@ -1,5 +1,5 @@
 from ...lexer.token_type import TokenType
-from ...ast.ast_control_flow import IfStatement, GotoStatement
+from ...ast.statements import IfStatement, GotoStatement
 from .base_statement_parser import BaseStatementParser
 
 class IfStatementParser(BaseStatementParser):

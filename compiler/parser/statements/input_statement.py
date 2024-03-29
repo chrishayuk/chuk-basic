@@ -1,4 +1,4 @@
-from ...ast.ast_statement import InputStatement
+from ...ast.statements import InputStatement
 from .base_statement_parser import BaseStatementParser
 
 class InputStatementParser(BaseStatementParser):

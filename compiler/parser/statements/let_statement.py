@@ -1,5 +1,5 @@
 from ...lexer.token_type import TokenType
-from ...ast.ast_statement import LetStatement
+from ...ast.statements import LetStatement
 from .base_statement_parser import BaseStatementParser
 
 class LetStatementParser(BaseStatementParser):

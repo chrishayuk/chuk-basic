@@ -1,7 +1,6 @@
 from ....lexer.tokenizer import Tokenizer
-from ....ast.ast_expression import BinaryExpression, Literal
-from ....ast.ast_statement import Statement, PrintStatement
-from ....ast.ast_control_flow import IfStatement, ForStatement, GotoStatement, GosubStatement, NextStatement, OnStatement
+from ....ast.expressions import BinaryExpression, Literal
+from ....ast.statements import PrintStatement, IfStatement, ForStatement, GotoStatement, GosubStatement, NextStatement, OnStatement
 from ...parser import Parser
 
 def test_parse_if_statement():

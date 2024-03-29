@@ -1,5 +1,5 @@
 from ...lexer.token_type import TokenType
-from ...ast.ast_control_flow import OnStatement
+from ...ast.statements import OnStatement
 from .base_statement_parser import BaseStatementParser
 
 class OnStatementParser(BaseStatementParser):

@@ -1,4 +1,4 @@
-from ...ast.ast_statement import StopStatement
+from ...ast.statements import StopStatement
 from .base_statement_parser import BaseStatementParser
 
 

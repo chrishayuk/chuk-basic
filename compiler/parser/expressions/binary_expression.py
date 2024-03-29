@@ -1,4 +1,4 @@
-from ...ast.ast_expression import BinaryExpression, Expression, FnExpression
+from ...ast.expressions import BinaryExpression, FnExpression
 from ...lexer.token_type import TokenType
 from .base_expression import BaseExpressionParser
 from .primary_expression import PrimaryExpressionParser
