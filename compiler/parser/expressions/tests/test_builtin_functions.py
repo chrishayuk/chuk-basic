@@ -12,8 +12,10 @@ def test_parse_builtin_sin_function():
     parser = Parser(tokens)
     program = parser.parse()
 
-    assert len(program.statements) == 1
-    print_statement = program.statements[0]
+    assert len(program.lines) == 1
+    line = program.lines[10]
+    assert len(line) == 1
+    print_statement = line[0]
     assert isinstance(print_statement, PrintStatement)
     fn_expression = print_statement.expression
     assert isinstance(fn_expression, FnExpression)
@@ -29,8 +31,10 @@ def test_parse_builtin_cos_function():
     parser = Parser(tokens)
     program = parser.parse()
 
-    assert len(program.statements) == 1
-    print_statement = program.statements[0]
+    assert len(program.lines) == 1
+    line = program.lines[20]
+    assert len(line) == 1
+    print_statement = line[0]
     assert isinstance(print_statement, PrintStatement)
     fn_expression = print_statement.expression
     assert isinstance(fn_expression, FnExpression)
@@ -46,8 +50,10 @@ def test_parse_builtin_tan_function():
     parser = Parser(tokens)
     program = parser.parse()
 
-    assert len(program.statements) == 1
-    print_statement = program.statements[0]
+    assert len(program.lines) == 1
+    line = program.lines[30]
+    assert len(line) == 1
+    print_statement = line[0]
     assert isinstance(print_statement, PrintStatement)
     fn_expression = print_statement.expression
     assert isinstance(fn_expression, FnExpression)
@@ -63,8 +69,10 @@ def test_parse_builtin_abs_function():
     parser = Parser(tokens)
     program = parser.parse()
 
-    assert len(program.statements) == 1
-    print_statement = program.statements[0]
+    assert len(program.lines) == 1
+    line = program.lines[40]
+    assert len(line) == 1
+    print_statement = line[0]
     assert isinstance(print_statement, PrintStatement)
     fn_expression = print_statement.expression
     assert isinstance(fn_expression, FnExpression)
@@ -80,8 +88,10 @@ def test_parse_builtin_log_function():
     parser = Parser(tokens)
     program = parser.parse()
 
-    assert len(program.statements) == 1
-    print_statement = program.statements[0]
+    assert len(program.lines) == 1
+    line = program.lines[50]
+    assert len(line) == 1
+    print_statement = line[0]
     assert isinstance(print_statement, PrintStatement)
     fn_expression = print_statement.expression
     assert isinstance(fn_expression, FnExpression)
@@ -97,8 +107,10 @@ def test_parse_builtin_exp_function():
     parser = Parser(tokens)
     program = parser.parse()
 
-    assert len(program.statements) == 1
-    print_statement = program.statements[0]
+    assert len(program.lines) == 1
+    line = program.lines[60]
+    assert len(line) == 1
+    print_statement = line[0]
     assert isinstance(print_statement, PrintStatement)
     fn_expression = print_statement.expression
     assert isinstance(fn_expression, FnExpression)
@@ -114,8 +126,10 @@ def test_parse_builtin_sqr_function():
     parser = Parser(tokens)
     program = parser.parse()
 
-    assert len(program.statements) == 1
-    print_statement = program.statements[0]
+    assert len(program.lines) == 1
+    line = program.lines[70]
+    assert len(line) == 1
+    print_statement = line[0]
     assert isinstance(print_statement, PrintStatement)
     fn_expression = print_statement.expression
     assert isinstance(fn_expression, FnExpression)
@@ -131,8 +145,10 @@ def test_parse_builtin_rnd_function():
     parser = Parser(tokens)
     program = parser.parse()
 
-    assert len(program.statements) == 1
-    print_statement = program.statements[0]
+    assert len(program.lines) == 1
+    line = program.lines[90]
+    assert len(line) == 1
+    print_statement = line[0]
     assert isinstance(print_statement, PrintStatement)
     fn_expression = print_statement.expression
     assert isinstance(fn_expression, FnExpression)
@@ -148,8 +164,10 @@ def test_parse_builtin_atn_function():
     parser = Parser(tokens)
     program = parser.parse()
 
-    assert len(program.statements) == 1
-    print_statement = program.statements[0]
+    assert len(program.lines) == 1
+    line = program.lines[100]
+    assert len(line) == 1
+    print_statement = line[0]
     assert isinstance(print_statement, PrintStatement)
     fn_expression = print_statement.expression
     assert isinstance(fn_expression, FnExpression)
@@ -165,8 +183,10 @@ def test_parse_builtin_chr_dollar_function():
     parser = Parser(tokens)
     program = parser.parse()
 
-    assert len(program.statements) == 1
-    print_statement = program.statements[0]
+    assert len(program.lines) == 1
+    line = program.lines[110]
+    assert len(line) == 1
+    print_statement = line[0]
     assert isinstance(print_statement, PrintStatement)
     fn_expression = print_statement.expression
     assert isinstance(fn_expression, FnExpression)
@@ -182,8 +202,10 @@ def test_parse_builtin_left_dollar_function():
     parser = Parser(tokens)
     program = parser.parse()
 
-    assert len(program.statements) == 1
-    print_statement = program.statements[0]
+    assert len(program.lines) == 1
+    line = program.lines[120]
+    assert len(line) == 1
+    print_statement = line[0]
     assert isinstance(print_statement, PrintStatement)
     fn_expression = print_statement.expression
     assert isinstance(fn_expression, FnExpression)
@@ -201,8 +223,10 @@ def test_parse_builtin_right_dollar_function():
     parser = Parser(tokens)
     program = parser.parse()
 
-    assert len(program.statements) == 1
-    print_statement = program.statements[0]
+    assert len(program.lines) == 1
+    line = program.lines[130]
+    assert len(line) == 1
+    print_statement = line[0]
     assert isinstance(print_statement, PrintStatement)
     fn_expression = print_statement.expression
     assert isinstance(fn_expression, FnExpression)
@@ -220,8 +244,10 @@ def test_parse_builtin_mid_dollar_function():
     parser = Parser(tokens)
     program = parser.parse()
 
-    assert len(program.statements) == 1
-    print_statement = program.statements[0]
+    assert len(program.lines) == 1
+    line = program.lines[140]
+    assert len(line) == 1
+    print_statement = line[0]
     assert isinstance(print_statement, PrintStatement)
     fn_expression = print_statement.expression
     assert isinstance(fn_expression, FnExpression)
@@ -241,8 +267,10 @@ def test_parse_builtin_sgn_function():
     parser = Parser(tokens)
     program = parser.parse()
 
-    assert len(program.statements) == 1
-    print_statement = program.statements[0]
+    assert len(program.lines) == 1
+    line = program.lines[150]
+    assert len(line) == 1
+    print_statement = line[0]
     assert isinstance(print_statement, PrintStatement)
     fn_expression = print_statement.expression
     assert isinstance(fn_expression, FnExpression)
@@ -258,8 +286,10 @@ def test_parse_builtin_spc_function():
     parser = Parser(tokens)
     program = parser.parse()
 
-    assert len(program.statements) == 1
-    print_statement = program.statements[0]
+    assert len(program.lines) == 1
+    line = program.lines[180]
+    assert len(line) == 1
+    print_statement = line[0]
     assert isinstance(print_statement, PrintStatement)
     fn_expression = print_statement.expression
     assert isinstance(fn_expression, FnExpression)
@@ -275,8 +305,10 @@ def test_parse_builtin_tab_function():
     parser = Parser(tokens)
     program = parser.parse()
 
-    assert len(program.statements) == 1
-    print_statement = program.statements[0]
+    assert len(program.lines) == 1
+    line = program.lines[190]
+    assert len(line) == 1
+    print_statement = line[0]
     assert isinstance(print_statement, PrintStatement)
     fn_expression = print_statement.expression
     assert isinstance(fn_expression, FnExpression)
@@ -285,8 +317,6 @@ def test_parse_builtin_tab_function():
     assert isinstance(fn_expression.arguments[0], Literal)
     assert fn_expression.arguments[0].value == 10
 
-import decimal
-
 def test_parse_builtin_int_function():
     input_string = "80 PRINT INT(3.14)"
     tokenizer = Tokenizer(input_string)
@@ -294,8 +324,10 @@ def test_parse_builtin_int_function():
     parser = Parser(tokens)
     program = parser.parse()
 
-    assert len(program.statements) == 1
-    print_statement = program.statements[0]
+    assert len(program.lines) == 1
+    line = program.lines[80]
+    assert len(line) == 1
+    print_statement = line[0]
     assert isinstance(print_statement, PrintStatement)
     fn_expression = print_statement.expression
     assert isinstance(fn_expression, FnExpression)
@@ -314,8 +346,10 @@ def test_parse_builtin_val_function():
     parser = Parser(tokens)
     program = parser.parse()
 
-    assert len(program.statements) == 1
-    print_statement = program.statements[0]
+    assert len(program.lines) == 1
+    line = program.lines[170]
+    assert len(line) == 1
+    print_statement = line[0]
     assert isinstance(print_statement, PrintStatement)
     fn_expression = print_statement.expression
     assert isinstance(fn_expression, FnExpression)
@@ -334,8 +368,10 @@ def test_parse_builtin_str_dollar_function():
     parser = Parser(tokens)
     program = parser.parse()
 
-    assert len(program.statements) == 1
-    print_statement = program.statements[0]
+    assert len(program.lines) == 1
+    line = program.lines[160]
+    assert len(line) == 1
+    print_statement = line[0]
     assert isinstance(print_statement, PrintStatement)
     fn_expression = print_statement.expression
     assert isinstance(fn_expression, FnExpression)
@@ -359,3 +395,4 @@ def test_parse_randomize_function():
     assert len(expression.arguments) == 1
     assert isinstance(expression.arguments[0], Literal)
     assert expression.arguments[0].value == 42
+

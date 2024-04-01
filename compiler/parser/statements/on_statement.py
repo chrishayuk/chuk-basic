@@ -1,13 +1,17 @@
 from ...lexer.token_type import TokenType
+from ...ast.expressions.literal_expression import Literal
 from ...ast.statements import OnStatement
 from .base_statement_parser import BaseStatementParser
 
 class OnStatementParser(BaseStatementParser):
     def parse(self):
         """Parse an ON statement from the token stream."""
+        
+        # Get the line number
+        line_number = self.parser.line_number
 
         # Advance past 'ON'
-        self.parser.advance()  
+        self.parser.advance()
 
         # Parse the controlling expression
         expression = self.parser.parse_expression()
@@ -15,9 +19,9 @@ class OnStatementParser(BaseStatementParser):
         # Look ahead to ensure correct handling of 'GOTO' or 'GOSUB'
         if not (self.parser.current_token and self.parser.current_token.token_type == TokenType.GO):
             raise SyntaxError("Expected 'GO' keyword after expression in ON statement")
-        
+
         # Advance past 'GO'
-        self.parser.advance()  
+        self.parser.advance()
 
         # Now check if it's GOTO or GOSUB
         if self.parser.current_token.token_type == TokenType.TO:
@@ -26,24 +30,23 @@ class OnStatementParser(BaseStatementParser):
             is_gosub = True
         else:
             raise SyntaxError("Expected 'TO' or 'SUB' keyword after 'GO' in ON statement")
-        
+
         # Advance past 'TO' or 'SUB'
-        self.parser.advance()  
+        self.parser.advance()
 
         # Parse the line numbers as targets
         line_numbers = []
         while self.parser.current_token and self.parser.current_token.token_type == TokenType.NUMBER:
-            line_number = self.parser.current_token.value
-            line_numbers.append(line_number)
+            line_number_value = self.parser.current_token.value
+            line_numbers.append(Literal(line_number_value))
 
             # Advance past line number
-            self.parser.advance()  
-            
+            self.parser.advance()
+
             if self.parser.current_token and self.parser.current_token.token_type == TokenType.COMMA:
                 # Skip comma for next line number
-                self.parser.advance()  
+                self.parser.advance()
             else:
                 break  # End of line numbers
 
-        return OnStatement(expression, line_numbers, is_gosub)
-
+        return OnStatement(expression, line_numbers, is_gosub, line_number)

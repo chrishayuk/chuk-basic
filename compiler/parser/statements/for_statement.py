@@ -1,11 +1,12 @@
 from ...lexer.token_type import TokenType
-from ...ast.variable import Variable
 from ...ast.statements import ForStatement, NextStatement
 from .base_statement_parser import BaseStatementParser
 
 class ForStatementParser(BaseStatementParser):
     def parse(self):
         """Parse a FOR loop statement from the token stream."""
+        # Get the line number
+        line_number = self.parser.line_number
 
         # Advance past 'FOR'
         self.parser.advance()
@@ -33,58 +34,83 @@ class ForStatementParser(BaseStatementParser):
         step_expression = self.parse_step_expression()
 
         # Parse the loop body
-        loop_body = self.parse_loop_body()
+        loop_body = self.parse_loop_body(variable)
 
-        # Expect 'NEXT' and validate loop variable
-        self.expect_next_keyword()
-        next_variable = self.expect_loop_variable(variable.name)
+        # Parse the NEXT statement
+        next_statement = self.parse_next_statement(variable)
 
-        return ForStatement(variable, start_expression, end_expression, step_expression, loop_body, NextStatement(next_variable))
+        # Return the ForStatement with the line number and NextStatement
+        return ForStatement(variable, start_expression, end_expression, step_expression, loop_body, next_statement, line_number)
 
     def parse_step_expression(self):
         """Parse the STEP expression if present."""
         step_expression = None
 
-        # check for STEP keyword
+        # Check for STEP keyword
         if self.parser.current_token.token_type == TokenType.STEP:
             # Advance past 'STEP'
             self.parser.advance()
 
-            # parse the step expression
+            # Parse the step expression
             step_expression = self.parser.parse_expression()
+
         return step_expression
 
-    def parse_loop_body(self):
-        """Parse the loop body enclosed within the FOR-NEXT loop."""
+    def parse_loop_body(self, loop_variable):
+        """Parse the loop body until the corresponding NEXT statement is encountered."""
         loop_body = []
-        while self.parser.current_token.token_type != TokenType.NEXT:
-            statement = self.parser.parse_statement()
-            if statement:
-                loop_body.append(statement)
-            else:
-                self.parser.advance()  # Ensure progress through tokens
+        current_line_number = self.parser.line_number
+
+        while self.parser.current_token:
+            # Capture the current line number before parsing the statement
+            current_line_number = self.parser.line_number
+
+            # Check if the next token is a NEXT statement for the loop variable
+            if self.parser.current_token.token_type == TokenType.NEXT:
+                next_statement = self.parse_next_statement(loop_variable)
+                if next_statement.variable.name == loop_variable.name:
+                    break
+                else:
+                    raise SyntaxError(f"Unexpected NEXT statement: {next_statement}")
+
+            # Parse the statement
+            main_statement = self.parser.parse_statement()
+            if main_statement:
+                # Assign the captured line number to the statement
+                main_statement.line_number = current_line_number
+                loop_body.append(main_statement)
+
+            self.parser.advance()
+
+        else:
+            raise SyntaxError("Unexpected end of input while parsing loop body")
+
         return loop_body
 
-    def expect_next_keyword(self):
-        """Ensure 'NEXT' token is present."""
-        if self.parser.current_token.token_type != TokenType.NEXT:
-            raise SyntaxError("Expected 'NEXT' keyword after FOR loop body")
-        
+    def parse_next_statement(self, loop_variable):
+        """Parse the NEXT statement associated with the loop variable."""
+        next_statement = NextStatement(loop_variable, self.parser.line_number)
+
         # Advance past 'NEXT'
         self.parser.advance()
 
-    def expect_loop_variable(self, expected_variable_name):
-        """Validate the loop variable matches the one declared with 'FOR'."""
+        # Check if there are more tokens available
+        if self.parser.current_token is None:
+            return next_statement
 
-        # check the next variable is a valid variable
-        if self.parser.current_token.token_type != TokenType.IDENTIFIER or self.parser.current_token.value != expected_variable_name:
-            raise SyntaxError(f"Expected loop variable '{expected_variable_name}' after 'NEXT', got '{self.parser.current_token.value}'")
-        
-        # get the Next Variable
-        next_variable = Variable(self.parser.current_token.value)
+        # Parse the loop variable (should match the loop variable)
+        parsed_variable = self.parser.parse_variable()
 
-        # Advance past the NEXT variable
-        self.parser.advance()
+        # Check if the parsed variable is None (reached end of input)
+        if parsed_variable is None:
+            return next_statement
 
-        # return the next variable
-        return next_variable
+        print("parsed variable")
+        print(parsed_variable)
+
+        # Check for next statement
+        if parsed_variable.name != loop_variable.name:
+            raise SyntaxError(f"Expected NEXT statement for variable '{loop_variable.name}', but got '{parsed_variable.name}'")
+
+        # Return next statement
+        return next_statement

@@ -1,12 +1,13 @@
-from compiler.parser.statements.if_statement import IfStatementParser
-from compiler.parser.statements.let_statement import LetStatementParser
 from ...lexer.token_type import TokenType
 from ...ast.variable import Variable
-from ...ast.functions import DefStatement
+from ...ast.statements import DefStatement
 from .base_statement_parser import BaseStatementParser
 
 class DefStatementParser(BaseStatementParser):
     def parse(self):
+        # Capture the line number of the DEF statement
+        def_line_number = self.parser.line_number
+
         # Expect the DEF keyword
         if self.parser.current_token.token_type != TokenType.DEF:
             raise SyntaxError("Expected 'DEF' keyword at the start of function definition")
@@ -51,38 +52,37 @@ class DefStatementParser(BaseStatementParser):
             return DefStatement(function_name, parameters, [function_body])
         else:
             # Multi-line function definition
-            function_body = self.parse_multi_line_function_body()
+            function_body, fnend_line_number = self.parse_multi_line_function_body()
 
-        # Construct and return the function definition
-        return DefStatement(function_name, parameters, function_body)
+            # Construct and return the function definition
+            def_statement = DefStatement(function_name, parameters, function_body)
+            def_statement.line_number = def_line_number  # Set the line_number attribute to the DEF statement line number
+            def_statement.fnend_line_number = fnend_line_number  # Set the fnend_line_number attribute
+            return def_statement
 
     def parse_multi_line_function_body(self):
         """Parse the body of a multi-line function definition, expecting to end with 'FNEND'."""
         body = []
-        while self.parser.current_token is not None and self.parser.current_token.token_type != TokenType.FNEND:
-            # Skip line numbers and newlines until a valid statement or 'FNEND' is encountered
-            while self.parser.current_token.token_type in [TokenType.LINENO, TokenType.NEWLINE]:
-                self.parser.advance()
+        fnend_line_number = None
 
-            # Check if 'FNEND' is encountered
+        while True:
+            if not self.parser.current_token:
+                raise SyntaxError("Unexpected end of input while parsing function body")
             if self.parser.current_token.token_type == TokenType.FNEND:
+                fnend_line_number = self.parser.line_number  # Capture the line number of FNEND
+                self.parser.advance()  # Advance past 'FNEND'
                 break
 
-            # Parse the next statement in the function body
-            if self.parser.current_token.token_type == TokenType.LET:
-                statement = LetStatementParser(self.parser).parse()
-            elif self.parser.current_token.token_type == TokenType.IF:
-                statement = IfStatementParser(self.parser).parse(in_function_body=True)  # Pass in_function_body=True
-            else:
-                raise SyntaxError(f"Unexpected token '{self.parser.current_token.value}'  in function body")
-            
+            # Capture the current line number before parsing the statement
+            current_line_number = self.parser.line_number
+
+            # Parse the statement
+            statement = self.parser.parse_statement()
             if statement:
+                # Assign the captured line number to the statement
+                statement.line_number = current_line_number
                 body.append(statement)
 
-        # Ensure 'FNEND' is present to properly close the function definition
-        if self.parser.current_token.token_type != TokenType.FNEND:
-            raise SyntaxError("Expected 'FNEND' at the end of multi-line function definition")
-        self.parser.advance()  # Move past 'FNEND'
+            self.parser.advance()
 
-        return body
-
+        return body, fnend_line_number

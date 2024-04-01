@@ -1,3 +1,4 @@
+from compiler.ast.expressions.literal_expression import Literal
 from ...lexer.token_type import TokenType
 from ...ast.statements import IfStatement, GotoStatement
 from .base_statement_parser import BaseStatementParser
@@ -5,6 +6,9 @@ from .base_statement_parser import BaseStatementParser
 class IfStatementParser(BaseStatementParser):
     def parse(self, in_function_body=False):
         """Parse an IF statement from the token stream."""
+        # Get the current line number
+        line_number = self.parser.line_number
+
         # Advance past the 'IF' token
         self.parser.advance()
 
@@ -19,16 +23,17 @@ class IfStatementParser(BaseStatementParser):
         self.parser.advance()
 
         # Parse the THEN clause
-        if in_function_body and self.parser.current_token.token_type == TokenType.NUMBER:
-            # THEN clause is a line number within the function body
-            line_number = int(self.parser.current_token.value)
+        if self.parser.current_token.token_type == TokenType.NUMBER:
+            # THEN clause is a line number
+            target_line_number = int(self.parser.current_token.value)
             self.parser.advance()
-            then_clause = GotoStatement(line_number)
+            then_clause = GotoStatement(Literal(target_line_number), line_number)
         else:
             # THEN clause is a statement
             then_clause = self.parser.parse_statement()
-            if then_clause is None:
-                raise SyntaxError("Expected a statement after 'THEN' keyword")
+
+        if then_clause is None:
+            raise SyntaxError("Expected a statement after 'THEN' keyword")
 
         # Initialize else_clause as None
         else_clause = None
@@ -46,4 +51,7 @@ class IfStatementParser(BaseStatementParser):
                 raise SyntaxError("Expected a statement after 'ELSE' keyword")
 
         # Return the constructed IfStatement
-        return IfStatement(condition, then_clause, else_clause)
+        if in_function_body:
+            return IfStatement(condition, then_clause, else_clause, line_number, in_function_body=True)
+        else:
+            return IfStatement(condition, then_clause, else_clause, line_number)

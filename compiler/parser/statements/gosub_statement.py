@@ -2,26 +2,28 @@ from ...lexer.token_type import TokenType
 from ...ast.statements import GosubStatement
 from .base_statement_parser import BaseStatementParser
 
-class GoSubStatementParser(BaseStatementParser):
+class GosubStatementParser(BaseStatementParser):
     def parse(self):
         """Parse a GOSUB statement from the token stream."""
-        
-        # Ensure the current token is 'GO', then advance to 'SUB'
+        # Get the line number
+        line_number = self.parser.line_number
+
+        # Ensure the current token is 'GO', then advance to 'TO'
         if self.parser.current_token.token_type != TokenType.GO:
-            raise SyntaxError("Expected 'GO' at the start of GOSUB statement")
-        
+            raise SyntaxError("Expected 'GO' at the start of GOTO statement")
+
         # Advance past 'GO'
         self.parser.advance()
 
         # Check for 'SUB' keyword
         if self.parser.current_token.token_type != TokenType.SUB:
-            raise SyntaxError("Expected 'SUB' keyword after 'GO'")
-        
-        # Advance past 'SUB'
+            raise SyntaxError("Expected 'TO' keyword after 'GO'")
+
+        # Advance past 'TO'
         self.parser.advance()
 
         # Parse the line number for the GOSUB
-        line_number = self.parser.parse_expression()
+        target_line_number = self.parser.parse_expression()
 
-        # Return the GosubStatement
-        return GosubStatement(line_number)
+        # Return the GotoStatement with the line number
+        return GosubStatement(target_line_number, line_number)

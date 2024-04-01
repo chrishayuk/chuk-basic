@@ -1,29 +1,13 @@
 from typing import List, Optional
+
 from ..lexer.token import Token
 from ..lexer.token_type import TokenType
 from ..ast.program import Program
 from ..ast.variable import Variable
 from ..ast.expressions import BinaryExpression, Expression, FnExpression
 from ..ast.statements import Statement
-from .statements.end_statement import EndStatementParser
-from .statements.input_statement import InputStatementParser
-from .statements.let_statement import LetStatementParser
-from .statements.print_statement import PrintStatementParser
-from .statements.rem_statement import RemStatementParser
-from .statements.return_statement import ReturnStatementParser
-from .statements.stop_statement import StopStatementParser
-from .statements.if_statement import IfStatementParser
-from .statements.for_statement import ForStatementParser
-from .statements.gosub_statement import GoSubStatementParser
-from .statements.goto_statement import GoToStatementParser
-from .statements.on_statement import OnStatementParser
-from .statements.def_statement import DefStatementParser
-from .statements.dim_statement import DimStatementParser
-from .statements.read_statement import ReadStatementParser
-from .expressions.binary_expression import BinaryExpressionParser
-from .expressions.primary_expression import PrimaryExpressionParser
-from .expressions.unary_expression import UnaryExpressionParser 
-
+from .statements import EndStatementParser, InputStatementParser, LetStatementParser, PrintStatementParser, RemStatementParser, ReturnStatementParser, StopStatementParser, IfStatementParser,ForStatementParser,NextStatementParser, GosubStatementParser, GotoStatementParser, OnStatementParser, DefStatementParser, DimStatementParser, ReadStatementParser
+from .expressions import BinaryExpressionParser, PrimaryExpressionParser, UnaryExpressionParser 
 
 class Parser:
     """A parser for the BASIC programming language, transforming a series of tokens into an abstract syntax tree."""
@@ -31,12 +15,24 @@ class Parser:
     def __init__(self, tokens: List[Token]):
         self.tokens = tokens
         self.current_pos = 0
+        self.line_number = 0
         self.current_token = self.tokens[self.current_pos] if self.tokens else None
 
     def advance(self):
         """Advance to the next token in the stream."""
         self.current_pos += 1
-        self.current_token = self.tokens[self.current_pos] if self.current_pos < len(self.tokens) else None
+
+        # check the current position
+        if self.current_pos < len(self.tokens):
+            # advance the position
+            self.current_token = self.tokens[self.current_pos]
+
+            # Check and update line number if the current token is a line number
+            if self.current_token.token_type == TokenType.LINENO:
+                self.line_number = self.current_token.value
+        else:
+            # no current token
+            self.current_token = None
 
     def peek_next_token(self) -> Optional[Token]:
         # Look ahead to the next token without consuming it
@@ -44,60 +40,104 @@ class Parser:
         if next_pos < len(self.tokens):
             return self.tokens[next_pos]
         return None
-
+    
     def parse(self) -> Program:
-        statements = []
+        program = Program()
 
-        # loop through each token
         while self.current_token:
-            # Debug print
-            print(f"Current token: {self.current_token}")
+            if self.current_token.token_type == TokenType.LINENO:
+                self.line_number = self.current_token.value
 
-            # check if we're a number
-            if self.current_token.token_type == TokenType.NUMBER:
-                # peek the next token
-                next_token = self.peek_next_token()
-                print(f"Next token: {next_token}")  # Debug print
-
-                # if next token is a statement, skip on
-                if next_token and next_token.token_type in [TokenType.DEF, TokenType.LET, TokenType.IF, TokenType.PRINT, ...]:
-                    self.advance()
-                    print(f"Advanced to token: {self.current_token}")  # Debug print
-
-            # parse the statement
+            # Parse the statement
             statement = self.parse_statement()
 
-            # if a statement
+            # If a statement is parsed
             if statement:
-                # add the statement to the list
-                statements.append(statement)
+                # Check if the statement is a multi-line statement
+                if hasattr(statement, 'to_statements'):
+                    # Use to_statements to get a structured list of contained statements
+                    for stmt_info in statement.to_statements():
+                        line_number = stmt_info.get('line_number', self.line_number)
+                        # Add each statement with its correct line number
+                        program.add_statement(line_number, stmt_info['statement'])
+                else:
+                    # For simpler statements or those without to_statements
+                    if getattr(statement, 'line_number', None) is None:
+                        statement.line_number = self.line_number
+                    # Add the structured statement to the program
+                    program.add_statement(statement.line_number, statement)
 
-            # skip past the statement
+            # Advance to the next token
             self.advance()
 
-        # finished parsing
         print("Finished parsing.")
+        return program
 
-        # return the program
-        return Program(statements)
+
 
     def parse_variable(self) -> Variable:
         """Parse a variable from the current token."""
-        if self.current_token.token_type == TokenType.IDENTIFIER:
-            var_name = self.current_token.value
-            self.advance()
-            return Variable(var_name)
-        elif self.current_token.token_type == TokenType.FN:
-            self.advance()
+        if self.current_token is not None:
             if self.current_token.token_type == TokenType.IDENTIFIER:
-                var_name = f"FN{self.current_token.value}"
+                var_name = self.current_token.value
                 self.advance()
+
+                # Check for array indices
+                if self.current_token is not None and self.current_token.token_type == TokenType.LPAREN:
+                    self.advance()
+                    indices = []
+
+                    while self.current_token.token_type != TokenType.RPAREN:
+                        index = self.parse_expression()
+                        indices.append(index)
+
+                        if self.current_token.token_type == TokenType.COMMA:
+                            self.advance()
+                        else:
+                            break
+
+                    if self.current_token.token_type != TokenType.RPAREN:
+                        raise SyntaxError("Expected ')' after array indices")
+                    self.advance()
+
+                    return Variable(var_name, indices)
+
                 return Variable(var_name)
+
+            elif self.current_token.token_type == TokenType.FN:
+                self.advance()
+                if self.current_token is not None and self.current_token.token_type == TokenType.IDENTIFIER:
+                    var_name = f"FN{self.current_token.value}"
+                    self.advance()
+
+                    # Check for function array indices
+                    if self.current_token is not None and self.current_token.token_type == TokenType.LPAREN:
+                        self.advance()
+                        indices = []
+
+                        while self.current_token.token_type != TokenType.RPAREN:
+                            index = self.parse_expression()
+                            indices.append(index)
+
+                            if self.current_token.token_type == TokenType.COMMA:
+                                self.advance()
+                            else:
+                                break
+
+                        if self.current_token.token_type != TokenType.RPAREN:
+                            raise SyntaxError("Expected ')' after function array indices")
+                        self.advance()
+
+                        return Variable(var_name, indices)
+
+                    return Variable(var_name)
+
+                else:
+                    raise SyntaxError(f"Expected function name after 'FN', but got {self.current_token.token_type}")
+
             else:
-                raise SyntaxError(f"Expected function name after 'FN', but got {self.current_token.token_type}")
-        raise SyntaxError(f"Expected variable or function name, but got {self.current_token.token_type}")
-        
-    
+                raise SyntaxError("Expected variable or function name, but got unexpected token")
+            
     def parse_expression(self) -> Expression:
         """Parse an expression from the current token."""
 
@@ -147,9 +187,9 @@ class Parser:
             # Look ahead to the next token to decide if it's GOTO or GOSUB
             next_token_type = self.tokens[self.current_pos + 1].token_type if self.current_pos + 1 < len(self.tokens) else None
             if next_token_type == TokenType.TO:
-                return GoToStatementParser(self).parse()
+                return GotoStatementParser(self).parse()
             elif next_token_type == TokenType.SUB:
-                return GoSubStatementParser(self).parse()
+                return GosubStatementParser(self).parse()
             else:
                 raise SyntaxError("Expected 'TO' or 'SUB' after 'GO'")
 
@@ -166,6 +206,7 @@ class Parser:
             # control flows
             TokenType.IF: IfStatementParser,
             TokenType.FOR: ForStatementParser,
+            TokenType.NEXT: NextStatementParser,
             TokenType.ON: OnStatementParser,
             # functions
             TokenType.DEF: DefStatementParser,
@@ -179,3 +220,4 @@ class Parser:
 
         # Return None if no matching parser is found
         return None
+

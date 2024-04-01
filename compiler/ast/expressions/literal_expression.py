@@ -10,3 +10,9 @@ class Literal(Expression):
 
     def __str__(self):
         return str(self.value)
+    
+    def to_dict(self):
+        return {
+            "type": "Literal",
+            "value": self.value
+        }

@@ -1,5 +1,6 @@
 from .statement import *
 from .for_statement import *
+from .next_statement import *
 from .gosub_statement import *
 from .goto_statement import *
 from .if_statement import *
@@ -14,3 +15,5 @@ from .stop_statement import *
 from .let_statement import *
 from .dim_statement import *
 from .read_statement import *
+from .def_statement import *
+from .fn_end_statement import *
