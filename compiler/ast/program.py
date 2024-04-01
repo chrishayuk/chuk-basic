@@ -18,6 +18,7 @@ class Program(ASTNode):
             self.lines[line_number] = []
 
         # Add the statement to its corresponding line number
+        print(f"Adding Statement to Line {line_number}: {statement}")
         self.lines[line_number].append(statement)
 
     def to_dict(self):
@@ -32,7 +33,7 @@ class Program(ASTNode):
                 for line_number, statements in sorted(self.lines.items())
             ]
         }
-
+    
     def to_json(self):
         # returns a json representation of the dictionary
         return json.dumps(self.to_dict(), indent=2)

@@ -13,8 +13,10 @@ class Variable:
         return self.name
 
     def to_dict(self):
-        return {
+        data = {
             "type": "Variable",
             "name": self.name,
-            "indices": [index.to_dict() for index in self.indices] if self.indices else None
         }
+        if self.indices:
+            data["indices"] = [index.to_dict() for index in self.indices]
+        return data

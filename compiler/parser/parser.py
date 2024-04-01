@@ -45,33 +45,46 @@ class Parser:
         program = Program()
 
         while self.current_token:
-            if self.current_token.token_type == TokenType.LINENO:
-                self.line_number = self.current_token.value
+            # Debug print current token and line number
+            print(f"Current Token: {self.current_token}, Line Number: {self.line_number}")
 
-            # Parse the statement
+            if self.current_token.token_type == TokenType.LINENO:
+                self.line_number = int(self.current_token.value)
+                print(f"Line number updated to {self.line_number}")
+                self.advance()
+
+            if not self.current_token:
+                break
+
+            # Capture the current line number before parsing the statement
+            current_line_number = self.line_number
+
             statement = self.parse_statement()
 
-            # If a statement is parsed
             if statement:
-                # Check if the statement is a multi-line statement
+                # Directly use the captured line number for the statement
+                statement.line_number = current_line_number
+
+                # Debug print for parsed statement
+                print(f"Parsed Statement: {statement}, with Line Number: {getattr(statement, 'line_number', 'Not Set')}")
+
                 if hasattr(statement, 'to_statements'):
-                    # Use to_statements to get a structured list of contained statements
                     for stmt_info in statement.to_statements():
                         line_number = stmt_info.get('line_number', self.line_number)
-                        # Add each statement with its correct line number
+                        # Debug print for adding multi-line statement
+                        print(f"Adding Multi-line Statement to Line {line_number}: {stmt_info['statement']}")
                         program.add_statement(line_number, stmt_info['statement'])
                 else:
-                    # For simpler statements or those without to_statements
-                    if getattr(statement, 'line_number', None) is None:
-                        statement.line_number = self.line_number
-                    # Add the structured statement to the program
+                    # Debug print for adding simple statement
+                    print(f"Adding Statement to Line {statement.line_number}: {statement}")
                     program.add_statement(statement.line_number, statement)
 
-            # Advance to the next token
             self.advance()
 
         print("Finished parsing.")
         return program
+
+
 
 
 
