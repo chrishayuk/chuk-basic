@@ -2,7 +2,10 @@ from .statement import Statement
 
 class LetStatement(Statement):
     def __init__(self, variable, expression):
+        # call the base constructor
         super().__init__()
+
+        # set the variable and expression
         self.variable = variable
         self.expression = expression
 

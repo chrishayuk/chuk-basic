@@ -7,7 +7,9 @@ class DefStatement(Statement):
         self.function_name = function_name
         self.parameters = parameters
         self.function_body = function_body
-        self.line_number = None  # Initialize line_number to None
+
+        # Initialize line_number to None
+        self.line_number = None  
 
     def to_statements(self):
         """Convert the DEF statement into a list of separate statements."""

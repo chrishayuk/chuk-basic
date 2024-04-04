@@ -2,7 +2,10 @@ from ..ast_node import ASTNode
 
 class Statement(ASTNode):
     def __init__(self, line_number=None):
+        # call the base constructor
         super().__init__()
+
+        # set the line number
         self.line_number = line_number
 
     def __repr__(self):

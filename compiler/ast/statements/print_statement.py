@@ -2,7 +2,10 @@ from .statement import Statement
 
 class PrintStatement(Statement):
     def __init__(self, expression):
+        # call the base constructor
         super().__init__()
+
+        # set the expression
         self.expression = expression
 
     def to_dict(self):

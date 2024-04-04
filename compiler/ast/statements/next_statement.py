@@ -2,9 +2,11 @@ from .statement import Statement
 
 class NextStatement(Statement):
     def __init__(self, variable, line_number):
-        super().__init__()
+        # call the base constructor
+        super().__init__(line_number)
+
+        # set the variable
         self.variable = variable
-        self.line_number = line_number
 
     def to_dict(self):
         return {
