@@ -10,7 +10,7 @@ from .statement import Statement
 from .next_statement import NextStatement  # Import NextStatement here
 
 class ForStatement(Statement):
-    def __init__(self, variable: Variable, start_expression: Expression, end_expression: Expression, step_expression: Expression, loop_body: List[Statement], next_statement: NextStatement, line_number: int):
+    def __init__(self, variable: Variable, start_expression: Expression, end_expression: Expression, step_expression: Expression = None, loop_body: List[Statement] = [], next_statement: NextStatement = None, line_number: int = None):
         super().__init__()
         self.variable = variable
         self.start_expression = start_expression
@@ -19,6 +19,23 @@ class ForStatement(Statement):
         self.loop_body = loop_body
         self.next_statement = next_statement
         self.line_number = line_number
+
+    def to_dict(self):
+        for_dict = {
+            "type": "ForStatement",
+            "variable": self.variable.to_dict(),
+            "start": self.start_expression.to_dict() if self.start_expression else None,
+            "end": self.end_expression.to_dict(),
+            "step": self.step_expression.to_dict() if self.step_expression else None,
+            # "body": [
+            #     {
+            #         "line_number": stmt.line_number,
+            #         "statements": [stmt.to_dict()]
+            #     } for stmt in self.loop_body
+            # ]
+        }
+
+        return for_dict
 
     def to_statements(self):
         """Convert the FOR loop into a list of separate statements."""
@@ -44,7 +61,7 @@ class ForStatement(Statement):
         })
 
         return statements
-    
+
 class NextStatement(Statement):
     def __init__(self, variable, line_number):
         self.variable = variable

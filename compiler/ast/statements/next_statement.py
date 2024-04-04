@@ -10,5 +10,4 @@ class NextStatement(Statement):
         return {
             "type": "NextStatement",
             "variable": self.variable.to_dict(),
-            "line_number": self.line_number
         }

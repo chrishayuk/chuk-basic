@@ -83,16 +83,19 @@ def test_for_loop():
                             "type": "LiteralExpression",
                             "value": 10
                         },
-                        "step": None,
-                        "body": [
-                            {
-                                "type": "PrintStatement",
-                                "expression": {
-                                    "type": "Variable",
-                                    "name": "i"
-                                }
-                            }
-                        ]
+                        "step": None
+                    }
+                ]
+            },
+            {
+                "line_number": 50,
+                "statements": [
+                    {
+                        "type": "PrintStatement",
+                        "expression": {
+                            "type": "Variable",
+                            "name": "i"
+                        }
                     }
                 ]
             },
@@ -115,7 +118,6 @@ def test_for_loop():
     print("Actual JSON:", actual_json)
     print("Expected JSON:", expected_json)
     assert actual_json == expected_json
-
 
 def test_goto_statement():
     input_string = '70 GOTO 100'
