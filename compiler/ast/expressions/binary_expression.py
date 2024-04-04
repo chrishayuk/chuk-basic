@@ -16,7 +16,7 @@ class BinaryExpression(Expression):
         # binary expression as a dictionary, handles recursion
         return {
             "type": "BinaryExpression",
-            "left": self.left.to_dict() if hasattr(self.left, 'to_dict') else str(self.left),
             "operator": self.operator.value if hasattr(self.operator, 'value') else str(self.operator),
+            "left": self.left.to_dict() if hasattr(self.left, 'to_dict') else str(self.left),
             "right": self.right.to_dict() if hasattr(self.right, 'to_dict') else str(self.right),
         }

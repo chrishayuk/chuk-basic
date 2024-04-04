@@ -1,6 +1,6 @@
 from decimal import Decimal
-from compiler.lexer.tokenizer import Tokenizer
-from compiler.parser.parser import Parser
+from ....lexer.tokenizer import Tokenizer
+from ....parser.parser import Parser
 import json
 
 class CustomJSONEncoder(json.JSONEncoder):
@@ -84,5 +84,3 @@ def test_multiple_statements():
     print("Actual JSON:", actual_json)
     print("Expected JSON:", expected_json)
     assert actual_json == expected_json
-
-

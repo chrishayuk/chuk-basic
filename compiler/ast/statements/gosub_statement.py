@@ -8,6 +8,5 @@ class GosubStatement(Statement):
     def to_dict(self):
         return {
             "type": "GosubStatement",
-            "line_number": self.line_number,
-            "target_line_number": self.target_line_number.to_dict()
+            "target": int(self.target_line_number.value)
         }
