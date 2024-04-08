@@ -83,30 +83,30 @@ def test_for_loop():
                             "type": "LiteralExpression",
                             "value": 10
                         },
-                        "step": None
-                    }
-                ]
-            },
-            {
-                "line_number": 50,
-                "statements": [
-                    {
-                        "type": "PrintStatement",
-                        "expression": {
-                            "type": "Variable",
-                            "name": "i"
-                        }
-                    }
-                ]
-            },
-            {
-                "line_number": 60,
-                "statements": [
-                    {
-                        "type": "NextStatement",
-                        "variable": {
-                            "type": "Variable",
-                            "name": "i"
+                        "step": None,
+                        "body": [
+                            {
+                                "line_number": 50,
+                                "statements": [
+                                    {
+                                        "type": "PrintStatement",
+                                        "expression": {
+                                            "type": "Variable",
+                                            "name": "i"
+                                        }
+                                    }
+                                ]
+                            }
+                        ],
+                        "next": {
+                            "line_number": 60,
+                            "statement": {
+                                "type": "NextStatement",
+                                "variable": {
+                                    "type": "Variable",
+                                    "name": "i"
+                                }
+                            }
                         }
                     }
                 ]

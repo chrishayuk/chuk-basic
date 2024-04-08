@@ -1,13 +1,8 @@
 from ast import Expression
 from typing import List
 from compiler.ast.variable import Variable
-from ...lexer.token_type import TokenType
-from ..expressions.binary_expression import BinaryExpression
-from .let_statement import LetStatement
-from .if_statement import IfStatement
-from .goto_statement import GotoStatement
 from .statement import Statement
-from .next_statement import NextStatement  # Import NextStatement here
+from .next_statement import NextStatement
 
 class ForStatement(Statement):
     def __init__(self, variable: Variable, start_expression: Expression, end_expression: Expression, step_expression: Expression = None, loop_body: List[Statement] = [], next_statement: NextStatement = None, line_number: int = None):
@@ -27,12 +22,16 @@ class ForStatement(Statement):
             "start": self.start_expression.to_dict() if self.start_expression else None,
             "end": self.end_expression.to_dict(),
             "step": self.step_expression.to_dict() if self.step_expression else None,
-            # "body": [
-            #     {
-            #         "line_number": stmt.line_number,
-            #         "statements": [stmt.to_dict()]
-            #     } for stmt in self.loop_body
-            # ]
+            "body": [
+                {
+                    "line_number": stmt.line_number,
+                    "statements": [stmt.to_dict()]
+                } for stmt in self.loop_body
+            ],
+            "next": {
+                "line_number": self.next_statement.line_number,
+                "statement": self.next_statement.to_dict()
+            }
         }
 
         return for_dict
@@ -47,22 +46,17 @@ class ForStatement(Statement):
             'statement': self
         })
 
-        # Add the loop body statements
-        for stmt in self.loop_body:
-            statements.append({
-                'line_number': stmt.line_number,
-                'statement': stmt
-            })
+        # # Add the loop body statements
+        # for stmt in self.loop_body:
+        #     statements.append({
+        #         'line_number': stmt.line_number,
+        #         'statement': stmt
+        #     })
 
-        # Add the NextStatement
-        statements.append({
-            'line_number': self.next_statement.line_number,
-            'statement': self.next_statement
-        })
+        # # Add the NextStatement
+        # statements.append({
+        #     'line_number': self.next_statement.line_number,
+        #     'statement': self.next_statement
+        # })
 
         return statements
-
-class NextStatement(Statement):
-    def __init__(self, variable, line_number):
-        self.variable = variable
-        self.line_number = line_number
